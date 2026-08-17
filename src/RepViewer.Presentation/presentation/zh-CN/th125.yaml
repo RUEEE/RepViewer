@@ -1,0 +1,8 @@
+fields:
+  Character:
+    label: 角色
+    values:
+      0: 射命丸文
+      1: 姬海棠果
+  LevelId: 关卡 ID
+  SubLevelId: 子关卡 ID

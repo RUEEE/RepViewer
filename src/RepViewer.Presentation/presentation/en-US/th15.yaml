@@ -1,0 +1,11 @@
+fields:
+  Character:
+    label: Character
+    values:
+      0: Reimu
+      1: Marisa
+      2: Sanae
+      3: Reisen
+  Power:
+    label: Power
+    format: decimal

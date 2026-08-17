@@ -1,0 +1,21 @@
+fields:
+  Character:
+    label: Character
+    values:
+      0: Reimu
+      1: Cirno
+      2: Aya
+      3: Marisa
+  ShotType:
+    label: Season
+    values:
+      0: Spring
+      1: Summer
+      2: Autumn
+      3: Winter
+      4: Doyou
+  SeasonPower: Season gauge
+  SeasonPowerMax: Maximum season gauge
+  Power:
+    label: Power
+    format: decimal

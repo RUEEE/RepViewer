@@ -1,0 +1,22 @@
+<Window x:Class="RepViewer.App.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="RepViewer" Width="1120" Height="720" MinWidth="760" MinHeight="480" Background="#F4F5F7" AllowDrop="True" DragOver="WindowDragOver" Drop="WindowDrop">
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Background="White" BorderBrush="#D8DCE3" BorderThickness="0,0,0,1" Padding="12">
+      <StackPanel Orientation="Horizontal">
+        <Button x:Name="OpenButton" Click="OpenClick"/>
+        <Button x:Name="ExportButton" Click="ExportClick" IsEnabled="False"/>
+        <Button x:Name="SettingsButton" Click="SettingsClick"/>
+        <TextBlock x:Name="FileText" Margin="12,0,0,0" VerticalAlignment="Center" Foreground="#596273" TextTrimming="CharacterEllipsis"/>
+      </StackPanel>
+    </Border>
+    <StatusBar DockPanel.Dock="Bottom" Background="White">
+      <DockPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=StatusBar}}">
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+          <TextBlock x:Name="EncodingLabel" VerticalAlignment="Center" Margin="0,0,6,0"/>
+          <ComboBox x:Name="EncodingCombo" Width="104" SelectionChanged="EncodingChanged"/>
+        </StackPanel>
+        <TextBlock x:Name="StatusText" VerticalAlignment="Center"/>
+      </DockPanel>
+    </StatusBar>
+    <TabControl x:Name="ReplayTabs" Margin="12" Background="White" SelectionChanged="ReplayTabsChanged"/>
+  </DockPanel>
+</Window>

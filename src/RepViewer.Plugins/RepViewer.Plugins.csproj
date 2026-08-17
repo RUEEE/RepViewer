@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>RepViewer.Plugins</AssemblyName>
+    <RootNamespace>RepViewer.Plugins</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RepViewer.Core\RepViewer.Core.csproj" />
+    <ProjectReference Include="..\RepViewer.Presentation\RepViewer.Presentation.csproj" />
+  </ItemGroup>
+</Project>

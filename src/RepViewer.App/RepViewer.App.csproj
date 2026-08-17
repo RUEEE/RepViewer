@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>RepViewer</AssemblyName>
+    <RootNamespace>RepViewer.App</RootNamespace>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RepViewer.Core\RepViewer.Core.csproj" />
+    <ProjectReference Include="..\RepViewer.Presentation\RepViewer.Presentation.csproj" />
+    <ProjectReference Include="..\RepViewer.Plugins\RepViewer.Plugins.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\RepViewer.Presentation\presentation\**\*.yaml" Link="presentation\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always" />
+    <Content Include="..\..\assets\thumbnail\*.png" Link="icons\thumbnail\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

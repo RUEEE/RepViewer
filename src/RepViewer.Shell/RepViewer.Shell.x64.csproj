@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <EnableComHosting>true</EnableComHosting>
+    <AssemblyName>RepViewer.Shell.x64</AssemblyName>
+    <RootNamespace>RepViewer.Shell</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup><ProjectReference Include="..\RepViewer.Core\RepViewer.Core.csproj" /></ItemGroup>
+  <Target Name="ForceRecreateComHost" BeforeTargets="CoreCompile" Condition="'$(EnableComHosting)' == 'true'">
+    <Delete Files="$(IntermediateOutputPath)$(AssemblyName).comhost.dll" />
+  </Target>
+</Project>

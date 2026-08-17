@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>RepViewer.Presentation</AssemblyName>
+    <RootNamespace>RepViewer.Presentation</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RepViewer.Core\RepViewer.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="presentation\**\*.yaml" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

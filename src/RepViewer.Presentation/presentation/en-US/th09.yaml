@@ -1,0 +1,69 @@
+fields:
+  Character:
+    label: Character
+    values:
+      0: Reimu
+      1: Marisa
+      2: Sakuya
+      3: Youmu
+      4: Reisen
+      5: Cirno
+      6: Lyrica
+      7: Mystia
+      8: Tewi
+      9: Yuuka
+      10: Aya
+      11: Medicine
+      12: Komachi
+      13: Eiki
+      14: Merlin
+      15: Lunasa
+  PlayerTypeP1:
+    label: 1P type
+    values:
+      0: Human
+      1: AI
+  PlayerTypeP2:
+    label: 2P type
+    values:
+      0: Human
+      1: AI
+  Pair: Pair
+  Place:
+    label: Location
+    values:
+      0: Random selection
+      1: Predetermined location
+      2: Bamboo Forest of the Lost — Reimu
+      3: Bamboo Forest of the Lost — Marisa
+      4: Phantom Meadow — Sakuya
+      5: Hakugyokurou Stairway — Youmu
+      6: Eientei — Reisen
+      7: Misty Lake — Cirno
+      8: Netherworld Boundary — Lyrica
+      9: Youkai Trail — Mystia
+      10: Bamboo Forest of the Lost — Tewi
+      11: Garden of the Sun — Yuuka
+      12: Giant Toad's Pond — Aya
+      13: Nameless Hill — Medicine
+      14: Road of Reconsideration — Komachi
+      15: Muenzuka — Eiki
+  OpponentCharacter:
+    label: Opponent character
+    values:
+      0: Reimu
+      1: Marisa
+      2: Sakuya
+      3: Youmu
+      4: Reisen
+      5: Cirno
+      6: Lyrica
+      7: Mystia
+      8: Tewi
+      9: Yuuka
+      10: Aya
+      11: Medicine
+      12: Komachi
+      13: Eiki
+      14: Merlin
+      15: Lunasa

@@ -1,0 +1,6 @@
+fields:
+  Day: Day
+  Scene: Scene
+  Stage: Stage
+  PowerLevel: Power level
+  Retry: Retry count

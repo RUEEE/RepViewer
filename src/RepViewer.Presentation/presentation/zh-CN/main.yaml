@@ -1,0 +1,238 @@
+ui:
+  app.title: 录像查看器
+  command.open: 打开
+  command.save: 保存注释
+  command.export: 导出
+  command.settings: 设置
+  section.general: 总体
+  section.stages: 分面
+  section.visualizations: 图表
+  section.stage: Stage
+  view.fps: 帧率
+  view.fpsChart: 帧率图
+  view.fpsList: 帧率列表
+  view.keyList: 按键列表
+  view.keyTransitions: 方向键转移
+  view.keyRates: 按键频率
+  column.field: 字段
+  column.rawField: 原始字段
+  column.value: 显示值
+  column.raw: 原始值
+  column.from: 从＼到
+  column.sample: 采样序号
+  column.frame: 帧
+  column.timeSeconds: 时间（秒:帧）
+  column.direction: 方向
+  column.actions: 动作键
+  command.ok: 确定
+  command.cancel: 取消
+  dialog.comment.title: 录像注释
+  settings.language: 界面语言
+  settings.interfaceScale: 界面缩放
+  settings.saveFailed: 保存设置失败
+  settings.fileAssociation: 关联.rpy文件
+  settings.fileAssociationHint: 为录像文件注册图标、缩略图和双击打开命令。
+  settings.commentEncoding: 注释编码
+  settings.chartNumberFormat: 折线图数字格式
+  settings.chartScientificNotation: 折线图使用科学记数法
+  settings.chartThousandsSeparator: 折线图加入逗号分隔
+  settings.plugins: 启用的展示插件
+  plugin.builtin.overview: 字段信息
+  plugin.builtin.key-list: 按键列表
+  plugin.builtin.fps-list: 帧率列表
+  plugin.builtin.fps: 帧率图
+  plugin.builtin.key-rates: APS / DPS / DFPS
+  plugin.builtin.keys: 方向转移与直方图
+  field.comment: 录像注释（双击修改）
+  field.spellTimeSeconds: 时间（秒）
+  field.cardName: 卡牌名称
+  field.cardId: 卡牌编号
+  field.cooldown: 冷却时间（秒:帧）
+  section.unknownHidden: 未知量 / 隐藏量
+  section.modData: Mod / 扩展数据
+  value.empty: （空）
+  value.binary: 二进制数据
+  value.decodeFailed: （使用当前编码解码失败）
+  status.ready: 就绪
+  status.saved: 已保存
+  status.exported: 已导出
+  unit.stages: 个关卡
+  unit.seconds: 秒
+  chart.interactionHint: 拖动选择区间 · Ctrl+拖动平移 · Alt+单击选择点 · 滚轮缩放
+  chart.average: 平均
+  chart.selection.none: 拖动选择区间后显示统计信息
+  chart.selection.range: 区间
+  chart.selection.count: 点数
+  chart.selection.average: 平均值
+  chart.selection.variance: 方差
+  chart.selection.minimum: 最小值
+  chart.selection.maximum: 最大值
+  command.punishment: 惩罚值设置
+  command.reset: 恢复默认
+  command.copyCell: 复制当前单元格
+  command.copyRow: 复制整行
+  command.showStageChart: 展示折线图
+  command.compare: 对比
+  column.enabled: 启用
+  column.replay: 录像
+  column.color: 颜色
+  chart.stageSequence: 面数
+  dialog.stageChart.title: Stage 数据折线图
+  dialog.stageChart.openFailed: 打开失败
+  dialog.stageChart.incompatible: 录像作品类型或面数不一致。
+  dialog.stageChart.fieldUnavailable: 录像中没有完整的对应数字字段。
+  dialog.stageChart.duplicate: 该录像已在折线列表中。
+  dialog.stageChart.deleteHint: 选择折线后按 Delete 或退格键可删除。
+  dialog.color.title: 选择折线颜色
+  dialog.color.hex: 十六进制颜色（#RRGGBB）
+  dialog.color.invalid: 请输入有效的六位十六进制颜色。
+  dialog.color.hue: 色相
+  dialog.color.saturation: 饱和度
+  dialog.color.value: 明度
+  dialog.color.preview: 预览
+  dialog.unknown.title: 未知量 / 隐藏量
+  dialog.extension.title: Mod / 扩展数据
+  dialog.raw.title: 原始数据
+  section.hidden: 隐藏量
+  section.unknown: 未知量
+  column.offset: 偏移
+  direction:
+    0: ∅
+    1: ↑
+    2: ↓
+    3: ↕‌
+    4: ←
+    5: ↖
+    6: ↙
+    7: ↕‌←
+    8: →
+    9: ↗
+    10: ↘
+    11: ↕‌→
+    12: ↔︎
+    13: ↑↔︎
+    14: ↓↔︎
+    15: ↕‌↔︎
+fields:
+  Name: 玩家名
+  Date: 录像日期
+  Timestamp:
+    label: 录像时间
+    format: datetime
+  Version: 版本
+  Character: 自机
+  ShotType: 机体类型
+  Rank:
+    label: 难度
+    values:
+      0: Easy
+      1: Normal
+      2: Hard
+      3: Lunatic
+      4: Extra
+  Clear: 通关状态
+  StageNumber: 关卡
+  Rng: 随机数种子
+  Score:
+    label: 分数
+    format: number
+  TotalScore:
+    label: 总分
+    format: number
+  Graze:
+    label: 擦弹
+    format: number
+  Power: 灵力
+  Lives: 残机
+  LifePieces: 残机碎片
+  Bombs: Bomb
+  BombPieces: Bomb碎片
+  PointItems:
+    label: 收集点道具数
+    format: number
+  Piv:
+    label: 最大得点
+    format: number
+  MissCount: Miss 数
+  ExtentCount: 奖残次数
+  SpellTimes:
+    label: 符卡实际时间
+    format: details
+  XPosition: 自机 X 坐标
+  YPosition: 自机 Y 坐标
+  RawFile: 原始文件
+  RawKeys: 原始按键
+  RawFps: 原始帧率
+  Magic: 魔数
+  Continues: Continues
+  MainItemDurationOrRange: MainItemDurationOrRange
+  PointExtent: 奖残所需道具数
+  PowerItemCountForScore: 算入得分的P点数
+  Retried: Retried
+  ShotSlow: 是否射击时低速
+  SpellCount: 收取符卡数
+  SpellNumber: 符卡ID
+  Stage: Stage
+  StageRank: Rank
+  Checksum: Checksum
+  Key: Key
+  Padding: Padding
+  Padding21: Padding21
+  PackedLength: PackedLength
+  StageOffsets: StageOffsets
+  RngValue1: RngValue1
+  RngValue2: RngValue2
+  RngValue3: RngValue3
+  SlowRate2: SlowRate2
+  SlowRate3: SlowRate3
+  Stage1Duration:
+    label: Stage 1 持续时间
+    format: duration
+  Stage2Duration:
+    label: Stage 2 持续时间
+    format: duration
+  Stage3Duration:
+    label: Stage 3 持续时间
+    format: duration
+  Stage4Duration:
+    label: Stage 4 持续时间
+    format: duration
+  Stage5Duration:
+    label: Stage 5 持续时间
+    format: duration
+  Stage6Duration:
+    label: Stage 6 持续时间
+    format: duration
+  Stage7Duration:
+    label: Stage 7 持续时间
+    format: duration
+  Stage8Duration:
+    label: Stage 8 持续时间
+    format: duration
+  Stage9Duration:
+    label: Stage 9 持续时间
+    format: duration
+  UnusedFrameCount: UnusedFrameCount
+  UnusedStageCount: UnusedStageCount
+  Extends: Extends
+  GrazeChapter: GrazeChapter
+  PivMax: PivMax
+  PivMin: PivMin
+  PowerLevelUp: PowerLevelUp
+  PowerMax: PowerMax
+  SpellPracticeId: SpellPracticeId
+  CardsAfterShopCooldownFrames: CardsAfterShopCooldownFrames
+  CardsAfterShopIds: CardsAfterShopIds
+  StageCount: 关卡数
+  FrameCount:
+    label: 帧数
+    format: number
+  Duration:
+    label: 时长
+    format: duration
+  TotalDuration:
+    label: 总时长
+    format: duration
+  SlowRate:
+    label: 处理落率
+    format: percent

@@ -1,0 +1,23 @@
+fields:
+  Character:
+    label: Character
+    values:
+      0: Reimu
+      1: Marisa
+      2: Sanae
+      3: Youmu
+  Rank:
+    label: Difficulty
+    values:
+      0: Easy
+      1: Normal
+      2: Hard
+      3: Lunatic
+      4: Extra
+      5: OverDrive
+  Trance:
+    label: Trance gauge
+    format: percent
+  Power:
+    label: Power
+    format: decimal

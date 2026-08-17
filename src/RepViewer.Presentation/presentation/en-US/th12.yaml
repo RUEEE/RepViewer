@@ -1,0 +1,36 @@
+fields:
+  Character:
+    label: Character
+    values:
+      0: Reimu
+      1: Marisa
+      2: Sanae
+  ShotType:
+    label: Shot type
+    values:
+      0: A
+      1: B
+  Ufo1:
+    label: UFO 1
+    values:
+      0: Empty
+      1: Red
+      2: Blue
+      3: Green
+  Ufo2:
+    label: UFO 2
+    values:
+      0: Empty
+      1: Red
+      2: Blue
+      3: Green
+  Ufo3:
+    label: UFO 3
+    values:
+      0: Empty
+      1: Red
+      2: Blue
+      3: Green
+  Power:
+    label: Power
+    format: decimal

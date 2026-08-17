@@ -1,0 +1,18 @@
+fields:
+  Character:
+    label: 角色
+    values:
+      0: 灵梦
+      1: 魔理沙
+      2: 咲夜
+  ShotType:
+    label: 机体类型
+    values:
+      0: A
+      1: B
+  NormalFragmentCount: 普通奖励次数
+  ScoreFromPoc: ScoreFromPoc
+  PocCount: PocCount
+  Power:
+    label: 灵力
+    format: decimal

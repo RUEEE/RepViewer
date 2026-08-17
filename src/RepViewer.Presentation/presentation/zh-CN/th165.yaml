@@ -1,0 +1,6 @@
+fields:
+  Day: 日
+  Scene: 场景
+  Stage: 关卡
+  PowerLevel: 灵力等级
+  Retry: 重试次数

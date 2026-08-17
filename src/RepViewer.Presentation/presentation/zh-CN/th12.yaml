@@ -1,0 +1,36 @@
+fields:
+  Character:
+    label: 角色
+    values:
+      0: 灵梦
+      1: 魔理沙
+      2: 早苗
+  ShotType:
+    label: 机体类型
+    values:
+      0: A
+      1: B
+  Ufo1:
+    label:Ufo1
+    values:
+      0: 空
+      1: 红
+      2: 蓝
+      3: 绿
+  Ufo2:
+   label:Ufo2
+   values:
+     0: 空
+     1: 红
+     2: 蓝
+     3: 绿
+  Ufo3:
+   label:Ufo3
+   values:
+     0: 空
+     1: 红
+     2: 蓝
+     3: 绿
+  Power:
+    label: 灵力
+    format: decimal

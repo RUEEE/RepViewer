@@ -1,0 +1,21 @@
+fields:
+  Character:
+    label: 角色
+    values:
+      0: 灵梦
+      1: 琪露诺
+      2: 文
+      3: 魔理沙
+  ShotType:
+    label: 季节
+    values:
+      0: 春
+      1: 夏
+      2: 秋
+      3: 冬
+      4: 土用
+  SeasonPower: 季节槽
+  SeasonPowerMax: 最大季节槽
+  Power:
+    label: 灵力
+    format: decimal

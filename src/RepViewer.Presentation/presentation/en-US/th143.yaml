@@ -1,0 +1,20 @@
+fields:
+  Day: Day
+  Scene: Scene
+  Stage: Stage
+  MainItem:
+    label: Main item
+    values:
+      0: Nimble Fabric
+      1: Tengu's Toy Camera
+      2: Gap Folding Umbrella
+      3: Ghastly Send-Off Lantern
+      4: Bloodthirsty Yin-Yang Orb
+      5: Four-Foot Magic Bomb
+      6: Substitute Jizo
+      7: Cursed Decoy Doll
+      8: Miracle Mallet (Replica)
+      9: None
+  SubItem: Sub-item
+  MainItemCount: Main item use count
+  SubItemCount: Sub-item use count

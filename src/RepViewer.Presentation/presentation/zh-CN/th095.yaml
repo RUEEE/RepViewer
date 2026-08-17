@@ -1,0 +1,4 @@
+fields:
+  StageNo: 总ID
+  LevelId: 关卡 ID
+  SubLevelId: 子关卡 ID

@@ -1,0 +1,25 @@
+fields:
+  Route:
+    label: Route
+    values:
+      0: A1-1
+      1: A1-2
+      2: A1-3
+      3: A2-2
+      4: A2-3
+      5: B1-1
+      6: B1-2
+      7: B1-3
+      8: B2-2
+      9: B2-3
+      10: C1-1
+      11: C1-2
+      12: C1-3
+      13: C2-2
+      14: C2-3
+      15: EX
+  Motivation: Motivation
+  FreezePower: Freeze power
+  FreezeArea: Freeze area
+  FreezeLevel: Freeze level
+  PerfectFreeze: Perfect freeze percentage

@@ -1,0 +1,47 @@
+fields:
+  Character:
+    label: Character
+    values:
+      0: Reimu & Yukari
+      1: Marisa & Alice
+      2: Sakuya & Remilia
+      3: Youmu & Yuyuko
+      4: Reimu
+      5: Yukari
+      6: Marisa
+      7: Alice
+      8: Sakuya
+      9: Remilia
+      10: Youmu
+      11: Yuyuko
+  Rank:
+    label: Difficulty
+    values:
+      0: Easy
+      1: Normal
+      2: Hard
+      3: Lunatic
+      4: Extra
+  YoukaiRate:
+    label: Youkai rate
+    format: percent
+  StageTimePass:
+    label: Time of night
+    values:
+      0: "PM 11:00"
+      1: "PM 11:30"
+      2: "AM 0:00"
+      3: "AM 0:30"
+      4: "AM 1:00"
+      5: "AM 1:30"
+      6: "AM 2:00"
+      7: "AM 2:30"
+      8: "AM 3:00"
+      9: "AM 3:30"
+      10: "AM 4:00"
+      11: "AM 4:30"
+      12: "AM 5:00"
+  Piv:
+    label: Time orbs
+    format: number
+  Time: Time

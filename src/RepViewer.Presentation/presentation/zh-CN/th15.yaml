@@ -1,0 +1,11 @@
+fields:
+  Character:
+    label: 角色
+    values:
+      0: 灵梦
+      1: 魔理沙
+      2: 早苗
+      3: 铃仙
+  Power:
+    label: 灵力
+    format: decimal

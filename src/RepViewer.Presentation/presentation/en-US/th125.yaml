@@ -1,0 +1,8 @@
+fields:
+  Character:
+    label: Character
+    values:
+      0: Aya
+      1: Hatate
+  LevelId: level_id
+  SubLevelId: sublevel_id

@@ -1,0 +1,238 @@
+ui:
+  app.title: RepViewer
+  command.open: Open
+  command.save: Save comment
+  command.export: Export
+  command.settings: Settings
+  section.general: General
+  section.stages: Stages
+  section.visualizations: Visualizations
+  section.stage: Stage
+  view.fps: Frame rate
+  view.fpsChart: Frame-rate chart
+  view.fpsList: Frame-rate samples
+  view.keyList: Key frames
+  view.keyTransitions: Direction transitions
+  view.keyRates: Key rates
+  column.field: Field
+  column.rawField: Raw field
+  column.value: Display value
+  column.raw: Raw value
+  column.from: From＼to
+  column.sample: Sample
+  column.frame: Frame
+  column.timeSeconds: Time (seconds:frames)
+  column.direction: Direction
+  column.actions: Action keys
+  command.ok: OK
+  command.cancel: Cancel
+  dialog.comment.title: Replay comment
+  settings.language: Interface language
+  settings.interfaceScale: Interface scale
+  settings.saveFailed: Failed to save settings
+  settings.fileAssociation: Associate .rpy files
+  settings.fileAssociationHint: Register replay icons, thumbnails, and the double-click open command.
+  settings.commentEncoding: Comment encoding
+  settings.chartNumberFormat: Line-chart number format
+  settings.chartScientificNotation: Use scientific notation in line charts
+  settings.chartThousandsSeparator: Use thousands separators in line charts
+  settings.plugins: Enabled presentation plugins
+  plugin.builtin.overview: Field information
+  plugin.builtin.key-list: Key list
+  plugin.builtin.fps-list: FPS samples
+  plugin.builtin.fps: FPS chart
+  plugin.builtin.key-rates: APS / DPS / DFPS
+  plugin.builtin.keys: Direction transitions and histogram
+  field.comment: Replay comment (double-click to edit)
+  field.spellTimeSeconds: Time (seconds)
+  field.cardName: Card name
+  field.cardId: Card ID
+  field.cooldown: Cooldown (seconds:frames)
+  section.unknownHidden: Unknown / hidden values
+  section.modData: Mod / extension data
+  value.empty: (empty)
+  value.binary: Binary data
+  value.decodeFailed: (cannot decode using the selected encoding)
+  status.ready: Ready
+  status.saved: Saved
+  status.exported: Exported
+  unit.stages: stages
+  unit.seconds: seconds
+  chart.interactionHint: Drag to select · Ctrl+drag to pan · Alt+click for a point · wheel to zoom
+  chart.average: Average
+  chart.selection.none: Drag to select an interval and show statistics
+  chart.selection.range: Range
+  chart.selection.count: Points
+  chart.selection.average: Average
+  chart.selection.variance: Variance
+  chart.selection.minimum: Minimum
+  chart.selection.maximum: Maximum
+  command.punishment: Punishment values
+  command.reset: Reset defaults
+  command.copyCell: Copy current cell
+  command.copyRow: Copy row
+  command.showStageChart: Show line chart
+  command.compare: Compare
+  column.enabled: Enabled
+  column.replay: Replay
+  column.color: Color
+  chart.stageSequence: Stage number
+  dialog.stageChart.title: Stage-data line chart
+  dialog.stageChart.openFailed: Failed to open replay
+  dialog.stageChart.incompatible: The game type or stage count does not match.
+  dialog.stageChart.fieldUnavailable: The replay does not contain a complete matching numeric field.
+  dialog.stageChart.duplicate: This replay is already in the line list.
+  dialog.stageChart.deleteHint: Select a line and press Delete or Backspace to remove it.
+  dialog.color.title: Choose line color
+  dialog.color.hex: Hex color (#RRGGBB)
+  dialog.color.invalid: Enter a valid six-digit hexadecimal color.
+  dialog.color.hue: Hue
+  dialog.color.saturation: Saturation
+  dialog.color.value: Value
+  dialog.color.preview: Preview
+  dialog.unknown.title: Unknown / hidden values
+  dialog.extension.title: Mod / extension data
+  dialog.raw.title: Raw data
+  section.hidden: Hidden values
+  section.unknown: Unknown values
+  column.offset: Offset
+  direction:
+    0: ∅
+    1: ↑
+    2: ↓
+    3: ↑↓
+    4: ←
+    5: ↖
+    6: ↙
+    7: ↑↓←
+    8: →
+    9: ↗
+    10: ↘
+    11: ↑↓→
+    12: ←→
+    13: ↑←→
+    14: ↓←→
+    15: ↑↓←→
+fields:
+  Name: Player
+  Date: Replay date
+  Timestamp:
+    label: Replay time
+    format: datetime
+  Version: Version
+  Character: Character
+  ShotType: Shot type
+  Rank:
+    label: Difficulty
+    values:
+      0: Easy
+      1: Normal
+      2: Hard
+      3: Lunatic
+      4: Extra
+  Clear: Clear status
+  StageNumber: Stage
+  Rng: RNG seed
+  Score:
+    label: Score
+    format: number
+  TotalScore:
+    label: Total score
+    format: number
+  Graze:
+    label: Graze
+    format: number
+  Power: Power
+  Lives: Lives
+  LifePieces: Life pieces
+  Bombs: Bombs
+  BombPieces: Bomb pieces
+  PointItems:
+    label: Point items
+    format: number
+  Piv:
+    label: Point item value
+    format: number
+  MissCount: Miss count
+  ExtentCount: Extends
+  SpellTimes:
+    label: Spell-card times
+    format: details
+  XPosition: Player X
+  YPosition: Player Y
+  RawFile: Raw file
+  RawKeys: Raw keys
+  RawFps: Raw frame rate
+  Magic: Magic
+  Continues: Continues
+  MainItemDurationOrRange: MainItemDurationOrRange
+  PointExtent: PointExtent
+  PowerItemCountForScore: PowerItemCountForScore
+  Retried: Retried
+  ShotSlow: ShotSlow
+  SpellCount: SpellCount
+  SpellNumber: SpellNumber
+  Stage: Stage
+  StageRank: StageRank
+  Checksum: Checksum
+  Key: Key
+  Padding: Padding
+  Padding21: Padding21
+  PackedLength: PackedLength
+  StageOffsets: StageOffsets
+  RngValue1: RngValue1
+  RngValue2: RngValue2
+  RngValue3: RngValue3
+  SlowRate2: SlowRate2
+  SlowRate3: SlowRate3
+  Stage1Duration:
+    label: Stage 1 duration
+    format: duration
+  Stage2Duration:
+    label: Stage 2 duration
+    format: duration
+  Stage3Duration:
+    label: Stage 3 duration
+    format: duration
+  Stage4Duration:
+    label: Stage 4 duration
+    format: duration
+  Stage5Duration:
+    label: Stage 5 duration
+    format: duration
+  Stage6Duration:
+    label: Stage 6 duration
+    format: duration
+  Stage7Duration:
+    label: Stage 7 duration
+    format: duration
+  Stage8Duration:
+    label: Stage 8 duration
+    format: duration
+  Stage9Duration:
+    label: Stage 9 duration
+    format: duration
+  UnusedFrameCount: UnusedFrameCount
+  UnusedStageCount: UnusedStageCount
+  Extends: Extends
+  GrazeChapter: GrazeChapter
+  PivMax: PivMax
+  PivMin: PivMin
+  PowerLevelUp: PowerLevelUp
+  PowerMax: PowerMax
+  SpellPracticeId: SpellPracticeId
+  CardsAfterShopCooldownFrames: CardsAfterShopCooldownFrames
+  CardsAfterShopIds: CardsAfterShopIds
+  StageCount: Stages
+  FrameCount:
+    label: Frames
+    format: number
+  Duration:
+    label: Duration
+    format: duration
+  TotalDuration:
+    label: Total duration
+    format: duration
+  SlowRate:
+    label: Slow rate
+    format: percent

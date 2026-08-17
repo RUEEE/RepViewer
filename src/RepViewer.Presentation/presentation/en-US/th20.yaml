@@ -1,0 +1,49 @@
+fields:
+  Character:
+    label: Character
+    values:
+      0: Reimu
+      1: Marisa
+  Equip0Type:
+    label: Main stone
+    values:
+      0: Scarlet Devil
+      1: Living Scarlet
+      2: Ice Snowflake
+      3: Blue Season
+      4: Earthen Depths
+      5: Immortal Moon
+      6: Beastly Cold
+      7: Divine Wind
+      8: Common Magic Stone
+  Equip1Type:
+    label: Focus stone
+    valuesFrom: Equip0Type
+  Equip2Type:
+    label: Spread stone
+    valuesFrom: Equip0Type
+  Equip3Type:
+    label: Support stone
+    valuesFrom: Equip0Type
+  YihenAttackGauge: Anomaly attack gauge (current)
+  YihenAttackGaugeMax: Anomaly attack gauge (maximum)
+  YihenEnemyGauge: Anomaly enemy gauge (current)
+  YihenEnemyGaugeMax: Anomaly enemy gauge (maximum)
+  YihenEnemyRed: Red anomaly-enemy value
+  YihenEnemyBlue: Blue anomaly-enemy value
+  YihenEnemyYellow: Yellow anomaly-enemy value
+  YihenEnemyGreen: Green anomaly-enemy value
+  YihenEnemyRedLevel: Red anomaly-enemy level
+  YihenEnemyBlueLevel: Blue anomaly-enemy level
+  YihenEnemyYellowLevel: Yellow anomaly-enemy level
+  YihenEnemyGreenLevel: Green anomaly-enemy level
+  YihenEnemyRedCount: Red anomaly-enemy appearances
+  YihenEnemyBlueCount: Blue anomaly-enemy appearances
+  YihenEnemyYellowCount: Yellow anomaly-enemy appearances
+  YihenEnemyGreenCount: Green anomaly-enemy appearances
+  Piv:
+    label: Anomaly value
+    format: decimal
+  Power:
+    label: Power
+    format: decimal

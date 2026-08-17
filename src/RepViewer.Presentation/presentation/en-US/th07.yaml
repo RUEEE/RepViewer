@@ -1,0 +1,28 @@
+fields:
+  Character:
+    label: Character
+    values:
+      0: Reimu A
+      1: Reimu B
+      2: Marisa A
+      3: Marisa B
+      4: Sakuya A
+      5: Sakuya B
+  Rank:
+    label: Difficulty
+    values:
+      0: Easy
+      1: Normal
+      2: Hard
+      3: Lunatic
+      4: Extra
+      5: Phantasm
+  Cherry:
+    label: Cherry
+    format: number
+  CherryPlus:
+    label: Cherry+
+    format: number
+  CherryMax:
+    label: Cherry Max
+    format: number

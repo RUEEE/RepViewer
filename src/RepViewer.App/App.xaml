@@ -1,0 +1,7 @@
+<Application x:Class="RepViewer.App.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Application.Resources>
+    <Style TargetType="Window"><EventSetter Event="Loaded" Handler="WindowLoaded"/></Style>
+    <Style TargetType="Button"><Setter Property="Padding" Value="14,7"/><Setter Property="Margin" Value="0,0,8,0"/></Style>
+    <Style TargetType="DataGrid"><Setter Property="GridLinesVisibility" Value="Horizontal"/><Setter Property="HeadersVisibility" Value="Column"/><Setter Property="CanUserAddRows" Value="False"/><Setter Property="IsReadOnly" Value="True"/></Style>
+  </Application.Resources>
+</Application>

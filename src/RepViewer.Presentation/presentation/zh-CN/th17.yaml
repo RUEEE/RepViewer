@@ -1,0 +1,36 @@
+fields:
+  Character:
+    label: 角色
+    values:
+      0: 灵梦
+      1: 魔理沙
+      2: 妖梦
+  ShotType:
+    label: 动物灵
+    values:
+      0: 野狼
+      1: 水獭
+      2: 大鹫
+  InitialRoarTime: 初始咆哮时间
+  Spirits:
+    label: 动物灵
+    format: enum-list
+    values:
+      0: 无
+      1: 狼
+      2: 獭
+      3: 鹫
+      4: 雷碎
+      5: 残碎
+      6: P点
+      7: 蓝点
+      8: 水母
+      9: 牛
+      10: 鸡
+      11: 龟
+      12: 埴轮
+      13: 马
+      14: 小鸡
+  Power:
+    label: 灵力
+    format: decimal

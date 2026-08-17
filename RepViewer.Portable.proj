@@ -1,0 +1,29 @@
+<Project>
+  <PropertyGroup>
+    <Configuration>Release</Configuration>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <PortableDir>$(MSBuildThisFileDirectory)Release\portable\</PortableDir>
+  </PropertyGroup>
+  <Target Name="CleanPortable">
+    <RemoveDir Directories="$(PortableDir)" />
+  </Target>
+  <Target Name="RestorePortable" DependsOnTargets="CleanPortable">
+    <MSBuild Projects="src\RepViewer.App\RepViewer.App.csproj"
+             Targets="Restore"
+             Properties="Configuration=$(Configuration);RuntimeIdentifier=$(RuntimeIdentifier);SelfContained=false" />
+  </Target>
+  <Target Name="Publish" DependsOnTargets="RestorePortable">
+    <MSBuild Projects="src\RepViewer.App\RepViewer.App.csproj"
+             Targets="Publish"
+             Properties="Configuration=$(Configuration);RuntimeIdentifier=$(RuntimeIdentifier);SelfContained=false;PublishSingleFile=false;DebugType=None;DebugSymbols=false;PublishDir=$(PortableDir)" />
+    <MSBuild Projects="src\RepViewer.App\RepViewer.App.x64.csproj"
+             Targets="Restore;Publish"
+             Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;SelfContained=false;PublishSingleFile=false;DebugType=None;DebugSymbols=false;PublishDir=$(PortableDir)" />
+    <MSBuild Projects="src\RepViewer.Shell\RepViewer.Shell.x86.csproj"
+             Targets="Restore;Publish"
+             Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x86;SelfContained=false;PublishSingleFile=false;DebugType=None;DebugSymbols=false;PublishDir=$(PortableDir)" />
+    <MSBuild Projects="src\RepViewer.Shell\RepViewer.Shell.x64.csproj"
+             Targets="Restore;Publish"
+             Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;SelfContained=false;PublishSingleFile=false;DebugType=None;DebugSymbols=false;PublishDir=$(PortableDir)" />
+  </Target>
+</Project>

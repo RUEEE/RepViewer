@@ -1,0 +1,49 @@
+fields:
+  Character:
+    label: 角色
+    values:
+      0: 灵梦
+      1: 魔理沙
+  Equip0Type:
+    label: 主石
+    values:
+      0: 绯红恶魔(R1)
+      1: 生物猩红(R2)
+      2: 冰雪花簇(B1)
+      3: 蓝色季节(B2)
+      4: 土黄深壤(Y1)
+      5: 不朽之月(Y2)
+      6: 兽之冷硬(G1)
+      7: 神道之风(G2)
+      8: 常见魔石(N)
+  Equip1Type:
+    label: 集中石
+    valuesFrom: Equip0Type
+  Equip2Type:
+    label: 扩散石
+    valuesFrom: Equip0Type
+  Equip3Type:
+    label: 支援石
+    valuesFrom: Equip0Type
+  YihenAttackGauge: 异变攻击槽（当前值）
+  YihenAttackGaugeMax: 异变攻击槽（最大值）
+  YihenEnemyGauge: 异变敌人槽（当前值）
+  YihenEnemyGaugeMax: 异变敌人槽（最大值）
+  YihenEnemyRed: 异变敌人红色值
+  YihenEnemyBlue: 异变敌人蓝色值
+  YihenEnemyYellow: 异变敌人黄色值
+  YihenEnemyGreen: 异变敌人绿色值
+  YihenEnemyRedLevel: 红色异变敌人等级
+  YihenEnemyBlueLevel: 蓝色异变敌人等级
+  YihenEnemyYellowLevel: 黄色异变敌人等级
+  YihenEnemyGreenLevel: 绿色异变敌人等级
+  YihenEnemyRedCount: 红色异变敌人出现次数
+  YihenEnemyBlueCount: 蓝色异变敌人出现次数
+  YihenEnemyYellowCount: 黄色异变敌人出现次数
+  YihenEnemyGreenCount: 绿色异变敌人出现次数
+  Piv:
+    label: 异变值
+    format: decimal
+  Power:
+    label: 灵力
+    format: decimal

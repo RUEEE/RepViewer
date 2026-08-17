@@ -1,0 +1,20 @@
+fields:
+  Day: 日
+  Scene: 场景
+  Stage: 关卡
+  MainItem:
+    label: 主道具
+    values:
+      0: 闪避布
+      1: 天狗的玩具相机
+      2: 隙间的折叠伞
+      3: 亡灵的送行提灯
+      4: 渴望鲜血的阴阳玉
+      5: 四尺魔法炸弹
+      6: 替身地藏
+      7: 被诅咒的诱饵人偶
+      8: 万宝槌（仿制品）
+      9: 无
+  SubItem: 副道具
+  MainItemCount: 主道具使用次数
+  SubItemCount: 副道具使用次数

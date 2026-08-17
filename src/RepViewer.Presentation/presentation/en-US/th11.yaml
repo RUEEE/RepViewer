@@ -1,0 +1,15 @@
+fields:
+  Character:
+    label: Character
+    values:
+      0: Reimu
+      1: Marisa
+  ShotType:
+    label: Shot type
+    values:
+      0: A
+      1: B
+      2: C
+  Power:
+    label: Power
+    format: decimal

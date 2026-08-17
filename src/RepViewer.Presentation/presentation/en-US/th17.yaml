@@ -1,0 +1,36 @@
+fields:
+  Character:
+    label: Character
+    values:
+      0: Reimu
+      1: Marisa
+      2: Youmu
+  ShotType:
+    label: Animal spirit
+    values:
+      0: Wolf
+      1: Otter
+      2: Eagle
+  InitialRoarTime: Initial roar time
+  Spirits:
+    label: Animal spirits
+    format: enum-list
+    values:
+      0: None
+      1: Wolf
+      2: Otter
+      3: Eagle
+      4: Thunder fragment
+      5: Life fragment
+      6: Power item
+      7: Point item
+      8: Jellyfish
+      9: Cow
+      10: Chicken
+      11: Turtle
+      12: Haniwa
+      13: Horse
+      14: Chick
+  Power:
+    label: Power
+    format: decimal

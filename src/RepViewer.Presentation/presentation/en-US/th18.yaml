@@ -1,0 +1,83 @@
+fields:
+  Character:
+    label: Character
+    values:
+      0: Reimu
+      1: Marisa
+      2: Sakuya
+      3: Sanae
+  Th18Card:
+    label: Card name
+    values:
+      0: Blank Card
+      1: Life Card
+      2: Spell Card
+      3: Fragmented Life Card
+      4: Fragmented Spell Card
+      5: Money Comes and Goes On Its Own
+      6: Ringo-Brand Dango
+      7: Phoenix's Tail
+      8: Yin-Yang Orb
+      9: Yin-Yang Orb (Needle)
+      10: Mini-Hakkero
+      11: Mini-Hakkero (Missile)
+      12: Maid Knife
+      13: Maid Knife (Ricochet)
+      14: Safe Return Frog Amulet
+      15: Snake-Shed Amulet
+      16: Half a Half-Phantom
+      17: Shanghai Doll
+      18: Ice Fairy
+      19: Back Door
+      20: Annoying UFO
+      21: Miser's Advice
+      22: Offerings to a Sacred Mountain
+      23: Death-Avoidance Elixir
+      24: Lucky Rabbit's Foot
+      25: Law of the Survival of the Fittest
+      26: Sutra of Dharmatic Power
+      27: Pebble Hat
+      28: Exploding Red Frog
+      29: Gale Geta
+      30: Idol Defense Corps
+      31: Princess Kaguya's Secret Stash
+      32: Reliable Tanuki Apprentice
+      33: Danmaku Ghost
+      34: Kiketsu Matriarch's Threat
+      35: Money Is the Best Lawyer in Hell
+      36: Physical Enhancement Jizo
+      37: Preparedness Talisman
+      38: Maneki-neko with Good Business Skills
+      39: Yamawaro Shopping Technique
+      40: Dragon Pipe
+      41: Border of Wave and Particle
+      42: Miracle Mallet
+      43: Keystone of Endurance
+      44: Lunatic Moon
+      45: Esteemed Authority
+      46: Vampire Fang
+      47: Underground Sun
+      48: Item Season
+      49: Heavy Bass Drum
+      50: Psychokinesis
+      51: Ancient Magatama
+      52: Spirit Power Sample Bottle
+      53: Great Tengu's Barley Rice
+      54: Gluttonous Centipede
+      55: Sky-Blue Magatama
+      56: None
+  Cards:
+    label: Cards
+    format: cards
+    valuesFrom: Th18Card
+  CardsAfterShop:
+    label: Cards after shop
+    format: cards
+    valuesFrom: Th18Card
+  Motivation: Motivation
+  Piv:
+    label: Point item value
+    format: number
+  Power:
+    label: Power
+    format: decimal

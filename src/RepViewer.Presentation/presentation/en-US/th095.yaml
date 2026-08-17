@@ -1,0 +1,4 @@
+fields:
+  StageNo: Stage ID
+  LevelId: level_id
+  SubLevelId: sublevel_id

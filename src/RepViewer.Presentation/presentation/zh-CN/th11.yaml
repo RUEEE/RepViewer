@@ -1,0 +1,15 @@
+fields:
+  Character:
+    label: 角色
+    values:
+      0: 灵梦
+      1: 魔理沙
+  ShotType:
+    label: 机体类型
+    values:
+      0: A
+      1: B
+      2: C
+  Power:
+    label: 灵力
+    format: decimal

@@ -1,0 +1,23 @@
+fields:
+  Character:
+    label: 角色
+    values:
+      0: 灵梦
+      1: 魔理沙
+      2: 早苗
+      3: 妖梦
+  Rank:
+    label: 难度
+    values:
+      0: Easy
+      1: Normal
+      2: Hard
+      3: Lunatic
+      4: Extra
+      5: OverDrive
+  Trance:
+    label: 灵界槽
+    format: percent
+  Power:
+    label: 灵力
+    format: decimal

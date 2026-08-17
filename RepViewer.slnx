@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="src/RepViewer.Core/RepViewer.Core.csproj" />
+  <Project Path="src/RepViewer.Presentation/RepViewer.Presentation.csproj" />
+  <Project Path="src/RepViewer.Plugins/RepViewer.Plugins.csproj" />
+  <Project Path="src/RepViewer.App/RepViewer.App.csproj" />
+  <Project Path="src/RepViewer.Shell/RepViewer.Shell.csproj" />
+</Solution>

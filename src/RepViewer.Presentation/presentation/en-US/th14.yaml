@@ -1,0 +1,18 @@
+fields:
+  Character:
+    label: Character
+    values:
+      0: Reimu
+      1: Marisa
+      2: Sakuya
+  ShotType:
+    label: Shot type
+    values:
+      0: A
+      1: B
+  NormalFragmentCount: Normal reward count
+  ScoreFromPoc: ScoreFromPoc
+  PocCount: PocCount
+  Power:
+    label: Power
+    format: decimal
