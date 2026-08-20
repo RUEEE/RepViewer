@@ -1,7 +1,10 @@
 using System.Globalization;
+using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.Win32;
 using RepViewer.Core;
 using RepViewer.Plugins;
 using RepViewer.Presentation;
@@ -41,6 +44,11 @@ public sealed class LineChartPanel : Grid
         RowDefinitions.Add(new RowDefinition());
         RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         Chart = new InteractiveLineChart { NumberFormat = numberFormat ?? new ChartNumberFormatOptions(), Data = view, MinHeight = 180 };
+        var saveCsv = new MenuItem { Header = presentation.Text("command.saveChartCsv") };
+        var chartMenu = new ContextMenu { Items = { saveCsv } };
+        chartMenu.Opened += (_, _) => saveCsv.IsEnabled = Chart.ExportData() is { Points.Count: > 0 };
+        saveCsv.Click += (_, _) => SaveCsv();
+        Chart.ContextMenu = chartMenu;
         Children.Add(Chart);
         var statistics = new TextBlock { Margin = new Thickness(64, 3, 12, 5), Foreground = Brushes.DimGray, TextWrapping = TextWrapping.Wrap, Text = presentation.Text("chart.selection.none") };
         Grid.SetRow(statistics, 1); Children.Add(statistics);
@@ -54,6 +62,20 @@ public sealed class LineChartPanel : Grid
         string FormatX(double value) => view.Metadata?.GetValueOrDefault("xIsFrame") is true
             ? ReplayFrameTime.Format((int)Math.Round(value))
             : value.ToString("0.##", CultureInfo.CurrentCulture);
+
+        void SaveCsv()
+        {
+            if (Chart.ExportData() is not { Points.Count: > 0 } export) return;
+            var invalid = Path.GetInvalidFileNameChars();
+            var name = new string(export.SeriesLabel.Select(character => invalid.Contains(character) ? '_' : character).ToArray());
+            var dialog = new SaveFileDialog { Filter = "CSV (*.csv)|*.csv", FileName = $"{name}.csv" };
+            if (dialog.ShowDialog(Window.GetWindow(this)) != true) return;
+            var lines = new string[export.Points.Count + 1];
+            lines[0] = "x,y";
+            for (var index = 0; index < export.Points.Count; index++)
+                lines[index + 1] = $"{export.Points[index].X.ToString("G17", CultureInfo.InvariantCulture)},{export.Points[index].Y.ToString("G17", CultureInfo.InvariantCulture)}";
+            File.WriteAllLines(dialog.FileName, lines, new UTF8Encoding(true));
+        }
     }
 }
 

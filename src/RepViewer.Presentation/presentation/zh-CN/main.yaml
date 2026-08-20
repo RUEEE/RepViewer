@@ -71,6 +71,7 @@ ui:
   command.reset: 恢复默认
   command.copyCell: 复制当前单元格
   command.copyRow: 复制整行
+  command.saveChartCsv: 保存为 CSV
   command.showStageChart: 展示折线图
   command.compare: 对比
   column.enabled: 启用

@@ -71,6 +71,7 @@ ui:
   command.reset: Reset defaults
   command.copyCell: Copy current cell
   command.copyRow: Copy row
+  command.saveChartCsv: Save as CSV
   command.showStageChart: Show line chart
   command.compare: Compare
   column.enabled: Enabled

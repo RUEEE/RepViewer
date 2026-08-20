@@ -83,8 +83,20 @@ internal sealed class KeyListPlugin : IReplayViewPlugin
     public IReadOnlyList<ReplayView> Create(ReplayPluginContext context)
     {
         var stage = context.Replay.Stages[context.StageIndex!.Value];
-        var rows = stage.Keys.Select((key, frame) => new ReplayViewRow(frame.ToString(),
-            [frame, ReplayFrameTime.Format(frame), ((int)key & 0xf) == 0 ? "" : context.Presentation.Text($"direction.{(int)key & 0xf}"), Actions(key), stage.RawKeys[frame]])).ToArray();
+        var rows = stage.Keys.Select((key, frame) =>
+        {
+            var raw = unchecked((ushort)stage.RawKeys[frame]);
+            var unknown = (ushort)(raw & ~KnownRawMask(context.Replay.Identity.FormatId));
+            var suffix = unknown == 0 ? "" : $"(0x{raw:X4})";
+            var direction = ((int)key & 0xf) == 0 ? "" : context.Presentation.Text($"direction.{(int)key & 0xf}");
+            var actions = Actions(key);
+            if (suffix.Length > 0)
+            {
+                if (actions.Length > 0) actions += suffix;
+                else direction += suffix;
+            }
+            return new ReplayViewRow(frame.ToString(), [frame, ReplayFrameTime.Format(frame), direction, actions, stage.RawKeys[frame]]);
+        }).ToArray();
         return [new ReplayView("key-list", "view.keyList", ReplayViewKind.Table,
             [new("frame", context.Presentation.Text("column.frame")), new("time", context.Presentation.Text("column.timeSeconds")),
              new("direction", context.Presentation.Text("column.direction")), new("actions", context.Presentation.Text("column.actions")),
@@ -94,9 +106,30 @@ internal sealed class KeyListPlugin : IReplayViewPlugin
     private static string Actions(ReplayKey key)
     {
         var values = new List<string>();
-        foreach (var (flag, label) in new[] { (ReplayKey.Z, "Z"), (ReplayKey.X, "X"), (ReplayKey.Shift, "Δ"), (ReplayKey.C, "Σ"), (ReplayKey.V, "V") })
+        var labels = new[]
+        {
+            (ReplayKey.Z, "Z"), (ReplayKey.X, "X"), (ReplayKey.C, "C"),
+            (ReplayKey.D, "D"), (ReplayKey.Shift, "Δ"), (ReplayKey.Ctrl, "Σ"), (ReplayKey.V, "V")
+        };
+        foreach (var (flag, label) in labels)
             if ((key & flag) != 0) values.Add(label);
         return string.Concat(values);
+    }
+
+    private static ushort KnownRawMask(string formatId)
+    {
+        var canonical = formatId.EndsWith("Trial", StringComparison.OrdinalIgnoreCase) ? formatId[..^5] : formatId;
+        if (canonical.Equals("alcostg", StringComparison.OrdinalIgnoreCase)) return 0x02ff;
+        return canonical switch
+        {
+            "TH06" or "TH07" or "TH08" or "TH09" or "TH10" => 0x01f7,
+            "TH09.5" => 0x01f7,
+            "TH12.5" => 0x00ff,
+            "TH13" or "TH14" or "TH14.3" or "TH15" or "TH16" or "TH16.5" => 0x0afb,
+            "TH18" => 0x0cfb,
+            "TH20" => 0x00fd,
+            _ => 0x02fb
+        };
     }
 }
 

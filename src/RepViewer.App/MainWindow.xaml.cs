@@ -12,7 +12,7 @@ namespace RepViewer.App;
 
 public partial class MainWindow : Window
 {
-    private static readonly string ApplicationVersion = typeof(MainWindow).Assembly.GetName().Version?.ToString(4) ?? "1.0.0.0";
+    private static readonly string ApplicationVersion = typeof(MainWindow).Assembly.GetName().Version?.ToString(4) ?? "1.1.0.0";
     private readonly ReplayPluginHost _plugins = new();
     private readonly DirectionPunishmentTable _punishment = DirectionPunishmentTable.CreateDefault();
     private HashSet<string> _enabledPlugins;
@@ -327,7 +327,7 @@ public partial class MainWindow : Window
         {
             if (FileAssociationService.PromptSuppressed)
             {
-                FileAssociationService.Unassociate(suppressPrompt: true, refreshExplorer: false);
+                FileAssociationService.Unassociate(suppressPrompt: true, refreshExplorer: false, notifyShell: false);
                 return;
             }
             var status = FileAssociationService.GetStatus();
@@ -339,7 +339,7 @@ public partial class MainWindow : Window
             var prompt = new AssociationPromptDialog { Owner = this };
             prompt.ShowDialog();
             if (prompt.Result == AssociationPromptResult.Yes) FileAssociationService.AssociateCurrent(refreshExplorer: true);
-            else if (prompt.Result == AssociationPromptResult.Never) FileAssociationService.Unassociate(suppressPrompt: true, refreshExplorer: true);
+            else if (prompt.Result == AssociationPromptResult.Never) FileAssociationService.Unassociate(suppressPrompt: true, refreshExplorer: false, notifyShell: false);
         }
         catch (Exception exception)
         {

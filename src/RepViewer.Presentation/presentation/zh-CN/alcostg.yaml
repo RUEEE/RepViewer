@@ -1,0 +1,23 @@
+fields:
+  Name: 玩家名
+  Timestamp:
+    label: 录像日期
+    format: datetime
+  Score:
+    label: 得分
+    format: number
+  SlowRate:
+    label: 处理落率
+    format: percent
+  LastStage:
+    label: 最终关卡
+    values:
+      0: "1"
+      1: "2"
+      2: "3"
+      3: All Clear
+  NoDInput:
+    label: 不使用 DirectInput
+    values:
+      false: 否
+      true: 是

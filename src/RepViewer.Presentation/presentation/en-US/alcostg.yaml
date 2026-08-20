@@ -1,0 +1,23 @@
+fields:
+  Name: Player
+  Timestamp:
+    label: Replay date
+    format: datetime
+  Score:
+    label: Score
+    format: number
+  SlowRate:
+    label: Slow rate
+    format: percent
+  LastStage:
+    label: Final stage
+    values:
+      0: "1"
+      1: "2"
+      2: "3"
+      3: All Clear
+  NoDInput:
+    label: DirectInput disabled
+    values:
+      false: No
+      true: Yes

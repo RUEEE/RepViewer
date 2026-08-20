@@ -56,6 +56,7 @@ internal static class ReplayFormats
         0x72383174 => [new Th18Format()],
         0x74383174 => [new Th18TrialFormat()],
         0x72303274 => [new Th20Format()],
+        0x72316c61 => [new AlcostgFormat()],
         _ => []
     };
 }
@@ -321,6 +322,31 @@ public unsafe struct Th10Header
     public uint Rank;                             // +0x58
     public uint Clear;                            // +0x5c
     public uint _unk_Unknown60;                   // +0x60
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public unsafe struct AlcostgHeader
+{
+    public fixed byte Name[0x0c];                 // +0x00
+    public uint Timestamp;                        // +0x0c
+    public uint Score;                            // +0x10
+    public fixed uint _unk_Unknown14[0x0c];       // +0x14
+    public uint NoDInput;                         // +0x44
+    public float SlowRate;                        // +0x48
+    public uint StageCount;                       // +0x4c
+    public fixed uint _unk_Unknown50[3];          // +0x50
+    public uint LastStage;                        // +0x5c
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public unsafe struct AlcostgStage
+{
+    public ushort StageNumber;                    // +0x00
+    public ushort Rng;                            // +0x02
+    public uint FrameCount;                       // +0x04
+    public uint PackedLength;                     // +0x08 (key bytes + FPS bytes)
+    public int Score;                             // +0x0c
+    public fixed uint _unk_Unknown10[2];          // +0x10
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -1015,10 +1041,12 @@ public unsafe struct Th125Stage
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct Th165Stage
+public unsafe struct Th165Stage
 {
     public uint _unk_Unknown00;                   // +0x00
-    public uint _UnusedFrameCount;                // +0x04
+    public uint FrameCount;                       // +0x04
+    public uint PackedLength;                     // +0x08
+    public fixed uint _unk_Unknown0c[0x35];       // +0x0c
 }
 
 internal abstract class OldFormat<THeader, TStage> : ReplayFormat<THeader, TStage> where THeader : unmanaged where TStage : unmanaged
@@ -1033,6 +1061,7 @@ internal abstract class OldFormat<THeader, TStage> : ReplayFormat<THeader, TStag
         if ((action & 1) != 0) key |= ReplayKey.Z;
         if ((action & 2) != 0) key |= ReplayKey.X;
         if ((action & 4) != 0) key |= ReplayKey.Shift;
+        if ((payload & 0x100) != 0) key |= ReplayKey.Ctrl;
         return key;
     }
 
@@ -1431,25 +1460,20 @@ internal abstract class ModernFormat<THeader, TStage> : ReplayFormat<THeader, TS
     // TH10 and TH20 override because their press/release state transitions differ.
     public virtual ReplayKeyFrames ReadKeys(ReadOnlySpan<byte> data, int frameCount, int stride)
     {
+        var storedFrameCount = frameCount;
+        if (frameCount > 0 && (stride == 6 ? ReplayDecoder.U32(data, (frameCount - 1) * stride) : ReplayDecoder.U24(data, (frameCount - 1) * stride)) is 0xffffff or 0xffffffff)
+            frameCount--;
         var rawKeys = new List<short>(frameCount);
         var normalized = new List<ReplayKey>(frameCount);
-        ushort baseInputState = 0;
         for (var frame = 0; frame < frameCount; frame++)
         {
             var offset = frame * stride;
             var payload = stride == 6 ? ReplayDecoder.U32(data, offset) : ReplayDecoder.U24(data, offset);
             var rawInput = (ushort)(payload & 0xffff);
             rawKeys.Add(unchecked((short)rawInput));
-            if (baseInputState == 0 && rawInput != 0) baseInputState = rawInput;
-            if (stride == 6)
-            {
-                var pressed = ReplayDecoder.U16(data, offset + 2);
-                var released = ReplayDecoder.U16(data, offset + 4);
-                baseInputState = (ushort)((baseInputState | pressed) & ~released);
-            }
-            normalized.Add(Normalize(rawInput != 0 ? rawInput : baseInputState, payload));
+            normalized.Add(Normalize(rawInput, payload));
         }
-        return new ReplayKeyFrames(rawKeys, normalized, frameCount * stride);
+        return new ReplayKeyFrames(rawKeys, normalized, storedFrameCount * stride);
     }
 
     public virtual void ApplyPostStageFields(THeader header, IReadOnlyList<object> stageHeaders, IReadOnlyList<ReplayStage> stages)
@@ -1461,15 +1485,24 @@ internal abstract class ModernFormat<THeader, TStage> : ReplayFormat<THeader, TS
     // Default action-bit mapping used by TH11 onward. TH10 overrides ShiftBit because its Shift action is bit 2.
     protected virtual int ShiftBit => 8;
 
-    protected ReplayKey Normalize(ushort inputState, uint payload)
+    protected virtual ReplayKey Normalize(ushort inputState, uint payload)
     {
         var key = (ReplayKey)((inputState >> 4) & 0xf);
         var action = inputState & 0xf;
-        var special = (payload >> 24) & 0xf;
         if ((action & 1) != 0) key |= ReplayKey.Z;
         if ((action & 2) != 0) key |= ReplayKey.X;
         if ((action & ShiftBit) != 0) key |= ReplayKey.Shift;
-        if (special is 2 or 10) key |= ReplayKey.C;
+        if (Version == "TH18")
+        {
+            if ((inputState & 0x400) != 0) key |= ReplayKey.C;
+            if ((inputState & 0x800) != 0) key |= ReplayKey.D;
+        }
+        else
+        {
+            if ((inputState & 0x200) != 0) key |= ReplayKey.Ctrl;
+            if ((inputState & 0x800) != 0) key |= ReplayKey.C;
+        }
+        if (Version == "TH10" && (inputState & 0x100) != 0) key |= ReplayKey.Ctrl;
         return key;
     }
 }
@@ -1479,45 +1512,80 @@ internal sealed class Th10Format : ModernFormat<Th10Header, Th10Stage>
     protected override IReplayDecoder Decoder { get; } = new ModernReplayDecoder(base1: 0xaa, block2: 0x80, base2: 0x3d, add2: 0x7a);
     protected override int ShiftBit => 4;
 
+}
+
+internal sealed class AlcostgFormat : ModernFormat<AlcostgHeader, AlcostgStage>
+{
+    public override string Version => "alcostg";
+    protected override IReplayDecoder Decoder { get; } = new ModernReplayDecoder(
+        block1: 0x400, base1: 0xaa, add1: 0xe1,
+        block2: 0x80, base2: 0x3d, add2: 0x7a);
+
+    public override bool TryReadSpecialFrameLayout(byte[] decoded, int stageOffset, AlcostgStage stageHeader,
+        out int frameCount, out int packedLength, out int replayOffset, out int stride)
+    {
+        frameCount = checked((int)stageHeader.FrameCount);
+        packedLength = checked((int)stageHeader.PackedLength);
+        replayOffset = stageOffset + Unsafe.SizeOf<AlcostgStage>();
+        stride = 8;
+        return true;
+    }
+
     public override ReplayKeyFrames ReadKeys(ReadOnlySpan<byte> data, int frameCount, int stride)
     {
-        var rawKeys = new List<short>(frameCount);
+        var raw = new List<short>(frameCount);
         var normalized = new List<ReplayKey>(frameCount);
-        ushort baseInputState = 0;
         for (var frame = 0; frame < frameCount; frame++)
         {
-            var offset = frame * stride;
-            var payload = ReplayDecoder.U32(data, offset);
-            var rawInput = (ushort)(payload & 0xffff);
-            var pressed = ReplayDecoder.U16(data, offset + 2);
-            var released = ReplayDecoder.U16(data, offset + 4);
-            rawKeys.Add(unchecked((short)rawInput));
-            if (baseInputState == 0 && rawInput != 0) baseInputState = rawInput;
-            baseInputState = (ushort)((baseInputState | (pressed & 0xf)) & ~(released & 0xf));
-            normalized.Add(Normalize(rawInput != 0 ? rawInput : baseInputState, payload));
+            var input = ReplayDecoder.U16(data, frame * stride);
+            raw.Add(unchecked((short)input));
+            var key = (ReplayKey)((input >> 4) & 0xf);
+            if ((input & (1 << 0)) != 0) key |= ReplayKey.Z;
+            if ((input & (1 << 1)) != 0) key |= ReplayKey.X;
+            if ((input & (1 << 2)) != 0) key |= ReplayKey.C;
+            if ((input & (1 << 3)) != 0) key |= ReplayKey.Shift;
+            if ((input & (1 << 9)) != 0) key |= ReplayKey.Ctrl;
+            normalized.Add(key);
         }
-        return new ReplayKeyFrames(rawKeys, normalized, frameCount * stride);
+        return new ReplayKeyFrames(raw, normalized, frameCount * stride);
     }
 }
 internal sealed class Th11Format : ModernFormat<Th11Header, Th11Stage> { public override string Version => "TH11"; protected override IReplayDecoder Decoder { get; } = new ModernReplayDecoder(block1: 0x800, base1: 0xaa, block2: 0x40, base2: 0x3d, add2: 0x7a); }
 internal sealed class Th12Format : ModernFormat<Th12Header, Th12Stage> { public override string Version => "TH12"; protected override IReplayDecoder Decoder { get; } = new ModernReplayDecoder(block1: 0x800, base1: 0x5e, block2: 0x40); }
-internal sealed class Th125Format : ModernFormat<Th125Header, Th125Stage> { public override string Version => "TH12.5"; protected override IReplayDecoder Decoder { get; } = new ModernReplayDecoder(block1: 0x800, base1: 0x5e, block2: 0x40); }
+internal sealed class Th125Format : ModernFormat<Th125Header, Th125Stage>
+{
+    public override string Version => "TH12.5";
+    protected override IReplayDecoder Decoder { get; } = new ModernReplayDecoder(block1: 0x800, base1: 0x5e, block2: 0x40);
+    public override ReplayKeyFrames ReadKeys(ReadOnlySpan<byte> data, int frameCount, int stride)
+    {
+        var storedFrameCount = frameCount;
+        if (frameCount > 0 && ReplayDecoder.U24(data, (frameCount - 1) * stride) == 0xffffff) frameCount--;
+        var raw = new List<short>(frameCount); var normalized = new List<ReplayKey>(frameCount);
+        for (var frame = 0; frame < frameCount; frame++)
+        {
+            var input = (byte)ReplayDecoder.U24(data, frame * stride);
+            raw.Add(input);
+            var key = ReplayKey.None;
+            if ((input & 0x01) != 0) key |= ReplayKey.Z;
+            if ((input & 0x02) != 0) key |= ReplayKey.X;
+            if ((input & 0x04) != 0) key |= ReplayKey.Shift;
+            if ((input & 0x08) != 0) key |= ReplayKey.Up;
+            if ((input & 0x10) != 0) key |= ReplayKey.Down;
+            if ((input & 0x20) != 0) key |= ReplayKey.Left;
+            if ((input & 0x40) != 0) key |= ReplayKey.Right;
+            if ((input & 0x80) != 0) key |= ReplayKey.Ctrl;
+            normalized.Add(key);
+        }
+        return new ReplayKeyFrames(raw, normalized, storedFrameCount * stride);
+    }
+}
 internal sealed class Th128Format : ModernFormat<Th128Header, Th128Stage> { public override string Version => "TH12.8"; protected override IReplayDecoder Decoder { get; } = new ModernReplayDecoder(block1: 0x800, base1: 0x5e, add1: 0xe7, block2: 0x80, add2: 0x36); }
 internal sealed class Th13Format : ModernFormat<Th13Header, Th13Stage> { public override string Version => "TH13"; }
 internal sealed class Th14Format : ModernFormat<Th14Header, Th14Stage> { public override string Version => "TH14"; }
 internal sealed class Th143Format : ModernFormat<Th143Header, Th143Stage> { public override string Version => "TH14.3"; }
 internal sealed class Th15Format : ModernFormat<Th15Header, Th15Stage> { public override string Version => "TH15"; }
 internal sealed class Th16Format : ModernFormat<Th16Header, Th16Stage> { public override string Version => "TH16"; }
-internal sealed class Th165Format : ModernFormat<Th165Header, Th165Stage>
-{
-    public override string Version => "TH16.5";
-    public override bool TryReadSpecialFrameLayout(byte[] decoded, int stageOffset, Th165Stage stageHeader, out int frameCount, out int packedLength, out int replayOffset, out int stride)
-    {
-        packedLength = checked((int)System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(decoded.AsSpan(stageOffset + 8, 4)));
-        frameCount = packedLength / 6 - 2; replayOffset = stageOffset + 8; stride = 6;
-        return true;
-    }
-}
+internal sealed class Th165Format : ModernFormat<Th165Header, Th165Stage> { public override string Version => "TH16.5"; }
 internal sealed class Th17Format : ModernFormat<Th17Header, Th17Stage> { public override string Version => "TH17"; }
 internal sealed class Th18Format : ModernFormat<Th18Header, Th18Stage> { public override string Version => "TH18"; }
 internal sealed class Th17TrialFormat : ModernFormat<Th17TrialHeader, Th17TrialStage> { public override string Version => "TH17Trial"; }
@@ -1530,23 +1598,23 @@ internal sealed class Th20Format : ModernFormat<Th20Header, Th20Stage>
 
     public override ReplayKeyFrames ReadKeys(ReadOnlySpan<byte> data, int frameCount, int stride)
     {
+        var storedFrameCount = frameCount;
+        if (frameCount > 0 && ReplayDecoder.U32(data, (frameCount - 1) * stride) == uint.MaxValue) frameCount--;
         var rawKeys = new List<short>(frameCount);
         var normalized = new List<ReplayKey>(frameCount);
-        ushort baseInputState = 0;
         for (var frame = 0; frame < frameCount; frame++)
         {
             var offset = frame * stride;
             var payload = ReplayDecoder.U32(data, offset);
             var rawInput = (ushort)(payload & 0xffff);
-            var pressed = ReplayDecoder.U16(data, offset + 2);
-            var released = ReplayDecoder.U16(data, offset + 4);
             rawKeys.Add(unchecked((short)rawInput));
-            if (frame == 0) baseInputState = pressed;
-            baseInputState = (ushort)(baseInputState & ~rawInput);
-            normalized.Add(Normalize(baseInputState, payload));
-            baseInputState |= released;
+            var key = (ReplayKey)((rawInput >> 4) & 0xf);
+            if ((rawInput & 0x01) != 0) key |= ReplayKey.Z;
+            if ((rawInput & 0x04) != 0) key |= ReplayKey.X;
+            if ((rawInput & 0x08) != 0) key |= ReplayKey.Shift;
+            normalized.Add(key);
         }
-        return new ReplayKeyFrames(rawKeys, normalized, frameCount * stride);
+        return new ReplayKeyFrames(rawKeys, normalized, storedFrameCount * stride);
     }
 
     public override void ApplyPostStageFields(Th20Header header, IReadOnlyList<object> stageHeaders, IReadOnlyList<ReplayStage> stages)
@@ -1566,5 +1634,14 @@ internal sealed class Th095Format : ModernFormat<Th95Header, Th95Stage>
     {
         packedLength = ReplayLayoutFields.PackedLength(stageHeader); frameCount = packedLength / 6 - 2; replayOffset = stageOffset + Unsafe.SizeOf<Th95Stage>(); stride = 6;
         return true;
+    }
+    protected override ReplayKey Normalize(ushort inputState, uint payload)
+    {
+        var key = (ReplayKey)((inputState >> 4) & 0xf);
+        if ((inputState & 0x002) != 0) key |= ReplayKey.Z;
+        if ((inputState & 0x001) != 0) key |= ReplayKey.X;
+        if ((inputState & 0x004) != 0) key |= ReplayKey.Shift;
+        if ((inputState & 0x100) != 0) key |= ReplayKey.Ctrl;
+        return key;
     }
 }

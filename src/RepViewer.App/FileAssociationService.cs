@@ -20,8 +20,8 @@ internal static class FileAssociationService
     private const string SuppressValue = "SuppressFileAssociationPrompt";
     private const string SourcePathValue = "RepViewerSourcePath";
     private const string ThumbnailSlot = "{E357FCCD-A995-4576-B01F-234630154E96}";
-    private const string IconClassId = "23E70D1B-F04E-45D5-BAB7-C8A64E0B45F9";
-    private const string ThumbnailClassId = "C43D4E2A-6154-4B6D-A23A-5FE2BB809D57";
+    private const string IconClassId = "8C9958C7-A9BF-4B11-87C1-33DFD848D06B";
+    private const string ThumbnailClassId = "0BC131AF-92B6-4DF0-AC66-D9EA5324CF59";
     private static string ShellArchitecture => Environment.Is64BitOperatingSystem ? "x64" : "x86";
     private static string ShellBaseName => $"RepViewer.Shell.{ShellArchitecture}";
     private static string[] ShellFiles =>
@@ -31,12 +31,12 @@ internal static class FileAssociationService
     ];
     private static readonly string[] OwnedIconHandlers =
     [
-        IconClassId, "DAAD97F0-C40C-4C6E-AEAC-A2639A020FEA", "A0434666-FB99-46F8-9282-AEEC1D17FCE0",
+        IconClassId, "23E70D1B-F04E-45D5-BAB7-C8A64E0B45F9", "DAAD97F0-C40C-4C6E-AEAC-A2639A020FEA", "A0434666-FB99-46F8-9282-AEEC1D17FCE0",
         "75342BB5-935B-479E-8275-F4A96D90F47B"
     ];
     private static readonly string[] OwnedThumbnailHandlers =
     [
-        ThumbnailClassId, "69764687-9204-4CDA-89A0-93C59A329B64", "A180237C-9F07-4565-965F-F45286214605", "FF45BF57-5E3D-442B-83DB-1A9783DD3AE3",
+        ThumbnailClassId, "C43D4E2A-6154-4B6D-A23A-5FE2BB809D57", "69764687-9204-4CDA-89A0-93C59A329B64", "A180237C-9F07-4565-965F-F45286214605", "FF45BF57-5E3D-442B-83DB-1A9783DD3AE3",
         "D65CC3A8-C942-45B7-B89D-1575F4EE8291"
     ];
 
@@ -128,13 +128,14 @@ internal static class FileAssociationService
                      .Concat(OwnedThumbnailHandlers.Where(classId => !classId.Equals(ThumbnailClassId, StringComparison.OrdinalIgnoreCase))))
             root.DeleteSubKeyTree($@"{ClassesPath}\CLSID\{{{obsoleteClassId}}}", false);
         SetAssociationState(root, true, installDirectory, comHost, false);
-        NotifyShell();
         if (refreshExplorer) RefreshExplorerCaches();
+        else NotifyShell();
     }
 
-    public static void Unassociate(bool suppressPrompt, bool refreshExplorer)
+    public static void Unassociate(bool suppressPrompt, bool refreshExplorer, bool notifyShell = true)
     {
         using var root = CurrentUser;
+        var shellChanged = HasOwnedRegistration(root);
         using (var extension = root.OpenSubKey($@"{ClassesPath}\.rpy", true))
             if (string.Equals(extension?.GetValue(null) as string, ProgId, StringComparison.OrdinalIgnoreCase)) extension!.DeleteValue(null!, false);
         DeleteOwnedHandler(root, $@"{ClassesPath}\.rpy\shellex\IconHandler", OwnedIconHandlers);
@@ -146,8 +147,22 @@ internal static class FileAssociationService
         foreach (var classId in OwnedIconHandlers.Concat(OwnedThumbnailHandlers))
             root.DeleteSubKeyTree($@"{ClassesPath}\CLSID\{{{classId}}}", false);
         SetAssociationState(root, false, null, null, suppressPrompt);
-        NotifyShell();
+        if (!shellChanged || !notifyShell) return;
         if (refreshExplorer) RefreshExplorerCaches();
+        else NotifyShell();
+    }
+
+    private static bool HasOwnedRegistration(RegistryKey root)
+    {
+        if (string.Equals(ReadDefault(root, $@"{ClassesPath}\.rpy"), ProgId, StringComparison.OrdinalIgnoreCase)) return true;
+        if (OwnedIconHandlers.Any(classId => IsClass(ReadDefault(root, $@"{ClassesPath}\.rpy\shellex\IconHandler"), classId))) return true;
+        if (OwnedThumbnailHandlers.Any(classId => IsClass(ReadDefault(root, $@"{ClassesPath}\.rpy\shellex\{ThumbnailSlot}"), classId))) return true;
+        using (var openWith = root.OpenSubKey($@"{ClassesPath}\.rpy\OpenWithProgids"))
+            if (openWith?.GetValueNames().Contains(ProgId, StringComparer.OrdinalIgnoreCase) == true) return true;
+        if (KeyExists(root, $@"{ClassesPath}\{ProgId}") ||
+            KeyExists(root, $@"{ClassesPath}\Applications\RepViewer.exe") ||
+            KeyExists(root, $@"{ClassesPath}\Applications\RepViewer.x64.exe")) return true;
+        return OwnedIconHandlers.Concat(OwnedThumbnailHandlers).Any(classId => KeyExists(root, $@"{ClassesPath}\CLSID\{{{classId}}}"));
     }
 
     private static string DeployShell(string sourceDirectory)
@@ -212,11 +227,12 @@ internal static class FileAssociationService
 
     private static string? ReadDefault(RegistryKey root, string path) { using var key = root.OpenSubKey(path); return key?.GetValue(null) as string; }
     private static string? ReadNamed(RegistryKey root, string path, string name) { using var key = root.OpenSubKey(path); return key?.GetValue(name) as string; }
+    private static bool KeyExists(RegistryKey root, string path) { using var key = root.OpenSubKey(path); return key is not null; }
     private static void SetDefault(RegistryKey root, string path, string value) { using var key = root.CreateSubKey(path, true); key.SetValue(null, value, RegistryValueKind.String); }
     private static void SetNamed(RegistryKey root, string path, string name, string value) { using var key = root.CreateSubKey(path, true); key.SetValue(name, value, RegistryValueKind.String); }
     private static bool IsClass(string? value, string classId) => string.Equals(value, $"{{{classId}}}", StringComparison.OrdinalIgnoreCase);
     private static bool PathEquals(string? left, string? right) => !string.IsNullOrWhiteSpace(left) && !string.IsNullOrWhiteSpace(right)
-        && string.Equals(Path.GetFullPath(left), Path.GetFullPath(right), StringComparison.OrdinalIgnoreCase);
+        && string.Equals(Path.TrimEndingDirectorySeparator(Path.GetFullPath(left)), Path.TrimEndingDirectorySeparator(Path.GetFullPath(right)), StringComparison.OrdinalIgnoreCase);
     private static bool CommandTargetsInstall(string? command, string installDirectory)
     {
         if (string.IsNullOrWhiteSpace(command)) return false;

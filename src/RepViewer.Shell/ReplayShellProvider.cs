@@ -38,7 +38,8 @@ internal sealed record ShellMetadata(string Game, string Name, string Difficulty
             _ => null
         };
         string? special = null; string? lowerLeft = null;
-        if (game is "th06" or "th07")
+        if (game == "alcostg") { character = "Isami.png"; difficulty = ""; }
+        else if (game is "th06" or "th07")
         {
             character = Character(game, characterValue / 2);
             label = characterValue >= 0 ? ((char)('A' + characterValue % 2)).ToString() : null;
@@ -105,7 +106,7 @@ internal static class ShellRenderer
         ["th128"] = Color.FromRgb(57,221,226), ["th13"] = Color.FromRgb(140,207,222), ["th14"] = Color.FromRgb(225,154,154),
         ["th143"] = Color.FromRgb(255,112,104), ["th15"] = Color.FromRgb(181,140,255), ["th16"] = Color.FromRgb(142,230,140),
         ["th165"] = Color.FromRgb(212,122,216), ["th17"] = Color.FromRgb(198,173,198), ["th18"] = Color.FromRgb(102,235,198),
-        ["th20"] = Color.FromRgb(141,228,228)
+        ["th20"] = Color.FromRgb(141,228,228), ["alcostg"] = Color.FromRgb(214,174,112)
     };
     public static BitmapSource Render(ShellMetadata metadata, int requested, bool details)
     {
@@ -118,7 +119,8 @@ internal static class ShellRenderer
             var border = new Pen(Brushes.Black, 4);
             drawing.DrawRectangle(Brushes.White, border, new Rect(30, 78, 452, 400));
             drawing.DrawRectangle(new SolidColorBrush(color), border, new Rect(30, 62, 452, 52));
-            var version = metadata.Game.StartsWith("th", StringComparison.OrdinalIgnoreCase) ? metadata.Game[2..] : "";
+            var version = metadata.Game.Equals("alcostg", StringComparison.OrdinalIgnoreCase) ? "alco"
+                : metadata.Game.StartsWith("th", StringComparison.OrdinalIgnoreCase) ? metadata.Game[2..] : "";
             var badgeWidth = version.Length >= 3 ? 210d : 165d;
             var badge = new Rect(446 - badgeWidth, 16, badgeWidth, 108); drawing.DrawRectangle(Brushes.White, border, badge);
             CenteredText(drawing, version, 92, FontWeights.Bold, badge);
@@ -227,7 +229,7 @@ internal static class ShellRenderer
 [ComVisible(true), Guid(ClassId), ClassInterface(ClassInterfaceType.None)]
 public sealed class ReplayThumbnailProvider : IInitializeWithFile, IInitializeWithStream, IThumbnailProvider
 {
-    public const string ClassId = "C43D4E2A-6154-4B6D-A23A-5FE2BB809D57";
+    public const string ClassId = "0BC131AF-92B6-4DF0-AC66-D9EA5324CF59";
     private string? _path; private byte[]? _bytes;
     public int Initialize(string filePath, uint mode) { _path = filePath; _bytes = null; return 0; }
     public int Initialize(IStream stream, uint mode) { try { _bytes = ReadAll(stream); _path = null; return 0; } catch { return HResult.Fail; } }
@@ -248,7 +250,7 @@ public sealed class ReplayThumbnailProvider : IInitializeWithFile, IInitializeWi
 [ComVisible(true), Guid(ClassId), ClassInterface(ClassInterfaceType.None)]
 public sealed class ReplayIconHandler : IInitializeWithFile, IExtractIconW
 {
-    public const string ClassId = "23E70D1B-F04E-45D5-BAB7-C8A64E0B45F9"; private string? _path;
+    public const string ClassId = "8C9958C7-A9BF-4B11-87C1-33DFD848D06B"; private string? _path;
     public int Initialize(string filePath, uint mode) { _path = filePath; return 0; }
     public int GetIconLocation(uint flags, StringBuilder iconFile, uint maxLength, out int iconIndex, out uint resultFlags)
     {

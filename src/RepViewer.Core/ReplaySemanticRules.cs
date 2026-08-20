@@ -6,7 +6,7 @@ internal static class ReplaySemanticRules
 {
     private static readonly HashSet<string> RawScoreFormats = new(StringComparer.OrdinalIgnoreCase)
     {
-        "TH06", "TH09.5", "TH12.5", "TH16.5"
+        "TH06", "TH09.5", "TH12.5", "TH16.5", "alcostg"
     };
 
     public static object? Convert(string formatId, string fieldName, object? rawValue, int offset)
@@ -37,6 +37,10 @@ internal static class ReplaySemanticRules
             return new SemanticField(spellNumber + 1L, rawValue, fieldName, offset);
         if (canonicalFormat == "TH08" && fieldName == "YoukaiRate" && TrySigned(rawValue, out var youkaiRate))
             return new SemanticField(youkaiRate / 100m, rawValue, fieldName, offset);
+        if (canonicalFormat == "alcostg" && fieldName == "LastStage" && TryUnsigned(rawValue, out var lastStage))
+            return new SemanticField((long)lastStage - 1L, rawValue, fieldName, offset);
+        if (canonicalFormat == "alcostg" && fieldName == "NoDInput" && TryUnsigned(rawValue, out var inputFlags))
+            return new SemanticField((inputFlags & 8UL) != 0, rawValue, fieldName, offset);
         if (TryUnsigned(rawValue, out var raw))
         {
             if (canonicalFormat is "TH09.5" or "TH12.5" && fieldName is "LevelId" or "SubLevelId") return new SemanticField(raw + 1UL, rawValue, fieldName, offset);

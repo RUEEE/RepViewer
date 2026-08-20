@@ -8,6 +8,7 @@ namespace RepViewer.App;
 
 public sealed record ChartSelectionStatistics(double Start, double End, int Count, double Average, double Variance, double Minimum, double Maximum);
 public sealed record ChartNumberFormatOptions(bool UseScientificNotation = false, bool UseThousandsSeparator = true);
+public sealed record ChartExportData(string SeriesLabel, IReadOnlyList<ReplayViewPoint> Points);
 
 /// <summary>Reusable line chart with axes, adaptive grid, stage boundaries, wheel zoom and drag pan.</summary>
 public sealed class InteractiveLineChart : FrameworkElement
@@ -37,7 +38,12 @@ public sealed class InteractiveLineChart : FrameworkElement
     private string? _selectedSeriesId;
     private ChartNumberFormatOptions _numberFormat = new();
 
-    public InteractiveLineChart() { Focusable = true; Cursor = Cursors.Cross; }
+    public InteractiveLineChart()
+    {
+        Focusable = true;
+        Cursor = Cursors.Cross;
+        RequestBringIntoView += (_, e) => e.Handled = true;
+    }
     public event EventHandler<ChartSelectionStatistics?>? SelectionStatisticsChanged;
 
     public ChartNumberFormatOptions NumberFormat
@@ -51,6 +57,16 @@ public sealed class InteractiveLineChart : FrameworkElement
         : NumberFormat.UseThousandsSeparator
             ? value.ToString("#,0.###", CultureInfo.CurrentCulture)
             : value.ToString("0.###", CultureInfo.CurrentCulture);
+
+    public ChartExportData? ExportData()
+    {
+        var series = ActiveSeries(VisibleSeries());
+        if (series is null) return null;
+        var points = _selectionStart is { } start && _selectionEnd is { } end
+            ? series.Points.Where(point => point.X >= Math.Min(start, end) && point.X <= Math.Max(start, end)).ToArray()
+            : series.Points.ToArray();
+        return new ChartExportData(series.Label, points);
+    }
 
     public IReadOnlySet<string>? EnabledSeriesIds
     {

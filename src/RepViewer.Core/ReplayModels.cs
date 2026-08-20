@@ -16,7 +16,9 @@ public enum ReplayKey
     X = 1 << 5,
     Shift = 1 << 6,
     C = 1 << 7,
-    V = 1 << 8
+    V = 1 << 8,
+    Ctrl = 1 << 9,
+    D = 1 << 10
 }
 
 public enum ReplayNodeType { Value, Group, Array }
