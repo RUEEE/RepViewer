@@ -53,8 +53,8 @@ internal sealed record ShellMetadata(string Game, string Name, string Difficulty
             label = null; difficulty = "";
         }
         else if (game == "th128") { character = "Cirno.png"; label = Route(RawNumber("Route")); }
-        else if (game == "th143") { character = "Seija.png"; lowerLeft = $"{shot + 1}-{rank + 1}"; label = null; difficulty = ""; }
-        else if (game == "th165") { character = "Usami.png"; lowerLeft = $"{rank + 1}-{shot + 1}"; label = null; }
+        else if (game == "th143") { character = "Seija.png"; lowerLeft = $"{Number("Day")}-{Number("Scene")}"; label = null; difficulty = ""; }
+        else if (game == "th165") { character = "Usami.png"; lowerLeft = $"{Number("Day")}-{Number("Scene")}"; label = null; }
         else if (game == "th16") special = new[] { "Season_Spring.png", "Season_Summer.png", "Season_Autumn.png", "Season_Winter.png", "Season_Full.png" }.ElementAtOrDefault(shot);
         else if (game == "th17") special = new[] { "Ghost_Wolf.png", "Ghost_Otter.png", "Ghost_Eagle.png" }.ElementAtOrDefault(shot);
         else if (game == "th20") special = new[] { "Stone_R1.png", "Stone_R2.png", "Stone_B1.png", "Stone_B2.png", "Stone_Y1.png", "Stone_Y2.png", "Stone_G1.png", "Stone_G2.png" }.ElementAtOrDefault(Number("ShotType1"));
@@ -229,7 +229,7 @@ internal static class ShellRenderer
 [ComVisible(true), Guid(ClassId), ClassInterface(ClassInterfaceType.None)]
 public sealed class ReplayThumbnailProvider : IInitializeWithFile, IInitializeWithStream, IThumbnailProvider
 {
-    public const string ClassId = "0BC131AF-92B6-4DF0-AC66-D9EA5324CF59";
+    public const string ClassId = "50B06B83-4104-43B3-BF54-E7849D8AD145";
     private string? _path; private byte[]? _bytes;
     public int Initialize(string filePath, uint mode) { _path = filePath; _bytes = null; return 0; }
     public int Initialize(IStream stream, uint mode) { try { _bytes = ReadAll(stream); _path = null; return 0; } catch { return HResult.Fail; } }
@@ -250,7 +250,7 @@ public sealed class ReplayThumbnailProvider : IInitializeWithFile, IInitializeWi
 [ComVisible(true), Guid(ClassId), ClassInterface(ClassInterfaceType.None)]
 public sealed class ReplayIconHandler : IInitializeWithFile, IExtractIconW
 {
-    public const string ClassId = "8C9958C7-A9BF-4B11-87C1-33DFD848D06B"; private string? _path;
+    public const string ClassId = "B2590446-F6A4-4A21-A179-3CF83547FE21"; private string? _path;
     public int Initialize(string filePath, uint mode) { _path = filePath; return 0; }
     public int GetIconLocation(uint flags, StringBuilder iconFile, uint maxLength, out int iconIndex, out uint resultFlags)
     {

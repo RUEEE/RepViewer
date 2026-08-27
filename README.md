@@ -24,7 +24,7 @@ Thanks to the following projects:
 
 # RepViewer
 
-RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查看器。当前版本为 **1.1.0.0**。
+RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查看器。当前版本为 **1.1.0.1**。
 
 ## 功能
 
@@ -38,6 +38,13 @@ RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查�
 - 支持中文/英文 YAML 展示配置、100%～200% 界面缩放以及插件开关。
 
 ## 更新记录
+
+### 1.1.0.1（2026-08-27）
+
+- 修复 TH14.3 与 TH16.5 缩略图错误地固定显示 `1-1` 的问题；缩略图现在使用经过 `+1` 语义转换的 `Day-Scene`。
+- 修复 TH14.3 与 TH16.5 的 Day、Scene 显示值，使二者均为原始值 `+1`。
+- 为 TH16.5 加入完整的 22 日枚举，并使用 `Sunday(1)`、`Tuesday(3)`、`Nightmare Diary(22)` 格式显示。
+- 更新 Shell Provider 标识，使 Explorer 重新关联后不再复用旧版缩略图 Provider 与缓存。
 
 ### 1.1.0.0（2026-08-20）
 
@@ -83,7 +90,7 @@ dotnet msbuild .\RepViewer.Portable.proj -t:Publish
 
 # RepViewer (English)
 
-RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The current version is **1.1.0.0**.
+RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The current version is **1.1.0.1**.
 
 ## Features
 
@@ -97,6 +104,13 @@ RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The curr
 - Supports Chinese/English YAML presentation, 100%–200% interface scaling, and configurable plugins.
 
 ## Changelog
+
+### 1.1.0.1 (2026-08-27)
+
+- Fixed TH14.3 and TH16.5 thumbnails being stuck at `1-1`; thumbnails now use the semantically converted `Day-Scene` values.
+- Fixed TH14.3 and TH16.5 Day and Scene display values so both are stored value plus one.
+- Added the complete 22-day TH16.5 enumeration using labels such as `Sunday(1)`, `Tuesday(3)`, and `Nightmare Diary(22)`.
+- Updated Shell Provider identities so Explorer no longer reuses the obsolete thumbnail provider and cache after reassociation.
 
 ### 1.1.0.0 (2026-08-20)
 

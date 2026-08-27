@@ -1,5 +1,29 @@
 fields:
-  Day: Day
+  Day:
+    label: Day
+    values:
+      1: Sunday(1)
+      2: Monday(2)
+      3: Tuesday(3)
+      4: Wednesday(4)
+      5: Thursday(5)
+      6: Friday(6)
+      7: Saturday(7)
+      8: Wrong Sunday(8)
+      9: Wrong Monday(9)
+      10: Wrong Tuesday(10)
+      11: Wrong Wednesday(11)
+      12: Wrong Thursday(12)
+      13: Wrong Friday(13)
+      14: Wrong Saturday(14)
+      15: Nightmare Sunday(15)
+      16: Nightmare Monday(16)
+      17: Nightmare Tuesday(17)
+      18: Nightmare Wednesday(18)
+      19: Nightmare Thursday(19)
+      20: Nightmare Friday(20)
+      21: Nightmare Saturday(21)
+      22: Nightmare Diary(22)
   Scene: Scene
   Stage: Stage
   PowerLevel: Power level

@@ -20,8 +20,8 @@ internal static class FileAssociationService
     private const string SuppressValue = "SuppressFileAssociationPrompt";
     private const string SourcePathValue = "RepViewerSourcePath";
     private const string ThumbnailSlot = "{E357FCCD-A995-4576-B01F-234630154E96}";
-    private const string IconClassId = "8C9958C7-A9BF-4B11-87C1-33DFD848D06B";
-    private const string ThumbnailClassId = "0BC131AF-92B6-4DF0-AC66-D9EA5324CF59";
+    private const string IconClassId = "B2590446-F6A4-4A21-A179-3CF83547FE21";
+    private const string ThumbnailClassId = "50B06B83-4104-43B3-BF54-E7849D8AD145";
     private static string ShellArchitecture => Environment.Is64BitOperatingSystem ? "x64" : "x86";
     private static string ShellBaseName => $"RepViewer.Shell.{ShellArchitecture}";
     private static string[] ShellFiles =>
@@ -31,12 +31,12 @@ internal static class FileAssociationService
     ];
     private static readonly string[] OwnedIconHandlers =
     [
-        IconClassId, "23E70D1B-F04E-45D5-BAB7-C8A64E0B45F9", "DAAD97F0-C40C-4C6E-AEAC-A2639A020FEA", "A0434666-FB99-46F8-9282-AEEC1D17FCE0",
+        IconClassId, "8C9958C7-A9BF-4B11-87C1-33DFD848D06B", "23E70D1B-F04E-45D5-BAB7-C8A64E0B45F9", "DAAD97F0-C40C-4C6E-AEAC-A2639A020FEA", "A0434666-FB99-46F8-9282-AEEC1D17FCE0",
         "75342BB5-935B-479E-8275-F4A96D90F47B"
     ];
     private static readonly string[] OwnedThumbnailHandlers =
     [
-        ThumbnailClassId, "C43D4E2A-6154-4B6D-A23A-5FE2BB809D57", "69764687-9204-4CDA-89A0-93C59A329B64", "A180237C-9F07-4565-965F-F45286214605", "FF45BF57-5E3D-442B-83DB-1A9783DD3AE3",
+        ThumbnailClassId, "0BC131AF-92B6-4DF0-AC66-D9EA5324CF59", "C43D4E2A-6154-4B6D-A23A-5FE2BB809D57", "69764687-9204-4CDA-89A0-93C59A329B64", "A180237C-9F07-4565-965F-F45286214605", "FF45BF57-5E3D-442B-83DB-1A9783DD3AE3",
         "D65CC3A8-C942-45B7-B89D-1575F4EE8291"
     ];
 

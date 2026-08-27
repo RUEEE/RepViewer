@@ -41,6 +41,8 @@ internal static class ReplaySemanticRules
             return new SemanticField((long)lastStage - 1L, rawValue, fieldName, offset);
         if (canonicalFormat == "alcostg" && fieldName == "NoDInput" && TryUnsigned(rawValue, out var inputFlags))
             return new SemanticField((inputFlags & 8UL) != 0, rawValue, fieldName, offset);
+        if (canonicalFormat is "TH14.3" or "TH16.5" && fieldName is "Day" or "Scene" && TryUnsigned(rawValue, out var sceneIndex))
+            return new SemanticField(sceneIndex + 1UL, rawValue, fieldName, offset);
         if (TryUnsigned(rawValue, out var raw))
         {
             if (canonicalFormat is "TH09.5" or "TH12.5" && fieldName is "LevelId" or "SubLevelId") return new SemanticField(raw + 1UL, rawValue, fieldName, offset);
