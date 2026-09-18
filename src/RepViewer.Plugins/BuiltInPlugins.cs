@@ -122,6 +122,7 @@ internal sealed class KeyListPlugin : IReplayViewPlugin
         if (canonical.Equals("alcostg", StringComparison.OrdinalIgnoreCase)) return 0x02ff;
         return canonical switch
         {
+            "TH06C" or "TH06NC" => 0x03ff,
             "TH06" or "TH07" or "TH08" or "TH09" or "TH10" => 0x01f7,
             "TH09.5" => 0x01f7,
             "TH12.5" => 0x00ff,

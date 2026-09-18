@@ -1,0 +1,16 @@
+fields:
+  Character:
+    label: Character
+    values:
+      0: Reimu A
+      1: Reimu B
+      2: Marisa A
+      3: Marisa B
+  general.Rank:
+    label: Difficulty
+    values:
+      0: Easy
+      1: Normal
+      2: Hard
+      3: Lunatic
+      4: Extra

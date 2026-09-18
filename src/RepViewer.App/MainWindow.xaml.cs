@@ -12,7 +12,7 @@ namespace RepViewer.App;
 
 public partial class MainWindow : Window
 {
-    private static readonly string ApplicationVersion = typeof(MainWindow).Assembly.GetName().Version?.ToString(4) ?? "1.1.0.1";
+    private static readonly string ApplicationVersion = typeof(MainWindow).Assembly.GetName().Version?.ToString(4) ?? "1.2.0.0";
     private readonly ReplayPluginHost _plugins = new();
     private readonly DirectionPunishmentTable _punishment = DirectionPunishmentTable.CreateDefault();
     private HashSet<string> _enabledPlugins;

@@ -36,7 +36,9 @@ public sealed class AdaptiveFrameGrid : Grid
         var rows = new List<FrameRow>((_frames.Count + columns - 1) / columns);
         for (var start = 0; start < _frames.Count; start += columns)
         {
-            var cells = new string[columns];
+            // A blank string is a real frame with no key pressed. Slash marks a
+            // cell beyond the end of the replay in the final partial row.
+            var cells = Enumerable.Repeat("/", columns).ToArray();
             for (var offset = 0; offset < columns && start + offset < _frames.Count; offset++)
             {
                 var values = _frames[start + offset].Cells;

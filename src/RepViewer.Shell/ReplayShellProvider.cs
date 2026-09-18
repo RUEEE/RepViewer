@@ -39,7 +39,7 @@ internal sealed record ShellMetadata(string Game, string Name, string Difficulty
         };
         string? special = null; string? lowerLeft = null;
         if (game == "alcostg") { character = "Isami.png"; difficulty = ""; }
-        else if (game is "th06" or "th07")
+        else if (game is "th06" or "th06c" or "th06nc" or "th07")
         {
             character = Character(game, characterValue / 2);
             label = characterValue >= 0 ? ((char)('A' + characterValue % 2)).ToString() : null;
@@ -78,7 +78,7 @@ internal sealed record ShellMetadata(string Game, string Name, string Difficulty
     {
         string[] names = game switch
         {
-            "th06" or "th07" or "th10" or "th11" => ["Reimu", "Marisa", "Sakuya"],
+            "th06" or "th06c" or "th06nc" or "th07" or "th10" or "th11" => ["Reimu", "Marisa", "Sakuya"],
             "th12" => ["Reimu", "Marisa", "Sanae"],
             "th08" => ["RM&YK", "MS&AL", "SK&RR", "YM&YY", "Reimu", "Yukari", "Marisa", "Alice", "Sakuya", "Remilia", "Youmu", "Yuyuko"],
             "th09" => ["Reimu", "Marisa", "Sakuya", "Youmu", "Reisen", "Cirno", "Lyrica", "Mystia", "Tewi", "Yuka", "Aya", "Medicine", "Komachi", "Sikieiki", "Merlin", "Lunasa"],
@@ -100,7 +100,7 @@ internal static class ShellRenderer
 {
     private static readonly IReadOnlyDictionary<string, Color> Colors = new Dictionary<string, Color>(StringComparer.OrdinalIgnoreCase)
     {
-        ["th06"] = Color.FromRgb(255,138,138), ["th07"] = Color.FromRgb(255,142,210), ["th08"] = Color.FromRgb(153,153,255),
+        ["th06"] = Color.FromRgb(255,138,138), ["th06c"] = Color.FromRgb(255,138,138), ["th06nc"] = Color.FromRgb(255,138,138), ["th07"] = Color.FromRgb(255,142,210), ["th08"] = Color.FromRgb(153,153,255),
         ["th09"] = Color.FromRgb(56,214,168), ["th095"] = Color.FromRgb(84,201,212), ["th10"] = Color.FromRgb(255,212,119),
         ["th11"] = Color.FromRgb(214,160,160), ["th12"] = Color.FromRgb(130,168,255), ["th125"] = Color.FromRgb(183,154,216),
         ["th128"] = Color.FromRgb(57,221,226), ["th13"] = Color.FromRgb(140,207,222), ["th14"] = Color.FromRgb(225,154,154),
@@ -118,7 +118,17 @@ internal static class ShellRenderer
             var color = Colors.GetValueOrDefault(metadata.Game, Color.FromRgb(184,184,184));
             var border = new Pen(Brushes.Black, 4);
             drawing.DrawRectangle(Brushes.White, border, new Rect(30, 78, 452, 400));
-            drawing.DrawRectangle(new SolidColorBrush(color), border, new Rect(30, 62, 452, 52));
+            var header = new Rect(30, 62, 452, 52);
+            if (metadata.Game.Equals("th06nc", StringComparison.OrdinalIgnoreCase))
+            {
+                const int stripeCount = 11;
+                var stripeWidth = header.Width / stripeCount;
+                for (var stripe = 0; stripe < stripeCount; stripe++)
+                    drawing.DrawRectangle(stripe % 2 == 0 ? new SolidColorBrush(color) : Brushes.White, null,
+                        new Rect(header.Left + stripe * stripeWidth, header.Top, stripeWidth + 0.5, header.Height));
+                drawing.DrawRectangle(null, border, header);
+            }
+            else drawing.DrawRectangle(new SolidColorBrush(color), border, header);
             var version = metadata.Game.Equals("alcostg", StringComparison.OrdinalIgnoreCase) ? "alco"
                 : metadata.Game.StartsWith("th", StringComparison.OrdinalIgnoreCase) ? metadata.Game[2..] : "";
             var badgeWidth = version.Length >= 3 ? 210d : 165d;
@@ -229,7 +239,7 @@ internal static class ShellRenderer
 [ComVisible(true), Guid(ClassId), ClassInterface(ClassInterfaceType.None)]
 public sealed class ReplayThumbnailProvider : IInitializeWithFile, IInitializeWithStream, IThumbnailProvider
 {
-    public const string ClassId = "50B06B83-4104-43B3-BF54-E7849D8AD145";
+    public const string ClassId = "A9F153F4-79EF-40FD-A2F4-35E56C95DD78";
     private string? _path; private byte[]? _bytes;
     public int Initialize(string filePath, uint mode) { _path = filePath; _bytes = null; return 0; }
     public int Initialize(IStream stream, uint mode) { try { _bytes = ReadAll(stream); _path = null; return 0; } catch { return HResult.Fail; } }
@@ -250,7 +260,7 @@ public sealed class ReplayThumbnailProvider : IInitializeWithFile, IInitializeWi
 [ComVisible(true), Guid(ClassId), ClassInterface(ClassInterfaceType.None)]
 public sealed class ReplayIconHandler : IInitializeWithFile, IExtractIconW
 {
-    public const string ClassId = "B2590446-F6A4-4A21-A179-3CF83547FE21"; private string? _path;
+    public const string ClassId = "DD2675A8-A510-48C7-B856-238671439C11"; private string? _path;
     public int Initialize(string filePath, uint mode) { _path = filePath; return 0; }
     public int GetIconLocation(uint flags, StringBuilder iconFile, uint maxLength, out int iconIndex, out uint resultFlags)
     {

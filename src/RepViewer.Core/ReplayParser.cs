@@ -38,7 +38,17 @@ public static class ReplayParser
         var magic = ReplayDecoder.U32(buffer, 0);
         var formats = ReplayFormats.ForMagic(magic);
         if (formats.Count == 0) throw new NotSupportedException($"Unsupported replay magic: 0x{magic:x8}.");
-        return formats[0].DecodeForAnalysis(buffer);
+        Exception? last = null;
+        foreach (var format in formats)
+        {
+            try
+            {
+                format.Parse(buffer);
+                return format.DecodeForAnalysis(buffer);
+            }
+            catch (Exception exception) { last = exception; }
+        }
+        throw new InvalidDataException("Replay data could not be decoded with the detected format.", last);
     }
 
 }

@@ -24,7 +24,7 @@ Thanks to the following projects:
 
 # RepViewer
 
-RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查看器。当前版本为 **1.1.0.1**。
+RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查看器。当前版本为 **1.2.0.0**。
 
 ## 功能
 
@@ -38,6 +38,14 @@ RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查�
 - 支持中文/英文 YAML 展示配置、100%～200% 界面缩放以及插件开关。
 
 ## 更新记录
+
+### 1.2.0.0（2026-09-18）
+
+- 新增红魔乡（原典版，TH06C/1.03）录像支持，包括总体与 Stage 字段、按键列表及各类按键统计图。
+- 新增红魔乡（新典版，TH06NC）普通游戏和符卡练习录像支持，并识别游戏模式与符卡编号。
+- 使用逐键样本核对 TH06C/TH06NC 的 Ctrl、Shift、Z、X 与方向键映射。
+- 为 Shell 图标与缩略图加入 `06c`、`06nc` 标识；新典版使用十一段红白相间的顶部竖条纹。
+- 更新 Shell Provider 标识，避免 Explorer 沿用不支持新格式的旧 Provider 和灰色缩略图缓存。
 
 ### 1.1.0.1（2026-08-27）
 
@@ -90,7 +98,7 @@ dotnet msbuild .\RepViewer.Portable.proj -t:Publish
 
 # RepViewer (English)
 
-RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The current version is **1.1.0.1**.
+RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The current version is **1.2.0.0**.
 
 ## Features
 
@@ -104,6 +112,14 @@ RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The curr
 - Supports Chinese/English YAML presentation, 100%–200% interface scaling, and configurable plugins.
 
 ## Changelog
+
+### 1.2.0.0 (2026-09-18)
+
+- Added replay support for EoSD Classic Edition (TH06C/1.03), including general and stage fields, key lists, and key-statistics charts.
+- Added normal-play and Spell Practice replay support for EoSD New Edition (TH06NC), including game-mode and spell-number detection.
+- Verified TH06C/TH06NC Ctrl, Shift, Z, X, and direction masks against sequential key-test replays.
+- Added `06c` and `06nc` Shell badges; New Edition thumbnails use an eleven-band red/white vertical-striped header.
+- Updated Shell Provider identities to prevent Explorer from retaining an older unsupported provider and cached gray thumbnails.
 
 ### 1.1.0.1 (2026-08-27)
 

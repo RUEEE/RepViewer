@@ -1,0 +1,24 @@
+fields:
+  Mode:
+    label: 游戏模式
+    values:
+      0: 标准模式
+      1: 挑战模式
+      2: 未知模式
+      3: 符卡练习模式
+  Character:
+    label: 角色
+    values:
+      0: 灵梦A
+      1: 灵梦B
+      2: 魔理沙A
+      3: 魔理沙B
+  SpellNumber: 符卡编号
+  general.Rank:
+    label: 难度
+    values:
+      0: Easy
+      1: Normal
+      2: Hard
+      3: Lunatic
+      4: Extra

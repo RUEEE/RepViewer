@@ -1,0 +1,24 @@
+fields:
+  Mode:
+    label: Game mode
+    values:
+      0: Standard
+      1: Challenge
+      2: Unknown
+      3: Spell Practice
+  Character:
+    label: Character
+    values:
+      0: Reimu A
+      1: Reimu B
+      2: Marisa A
+      3: Marisa B
+  SpellNumber: Spell card number
+  general.Rank:
+    label: Difficulty
+    values:
+      0: Easy
+      1: Normal
+      2: Hard
+      3: Lunatic
+      4: Extra

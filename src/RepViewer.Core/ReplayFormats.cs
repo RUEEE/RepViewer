@@ -28,6 +28,8 @@ internal abstract class ReplayFormat<THeader, TStage> : ReplayFormat where THead
     protected virtual TStage ReadStageHeader(ReadOnlySpan<byte> decoded) => StructMarshal.Read<TStage>(decoded);
     protected ReplayDocument CreatePropertySet(THeader header, List<ReplayStage> stages, ReadOnlySpan<byte> original) =>
         ReplayDocument.Create(Version, header, stages, original);
+    protected ReplayDocument CreatePropertySet(THeader header, List<ReplayStage> stages, ReadOnlySpan<byte> original,
+        IEnumerable<KeyValuePair<string, object?>> generalFields) => ReplayDocument.Create(Version, header, stages, original, generalFields);
 }
 
 internal sealed record ReplayKeyFrames(List<short> RawKeys, List<ReplayKey> NormalizedKeys, int BytesRead);
@@ -36,7 +38,7 @@ internal static class ReplayFormats
 {
     public static IReadOnlyList<IReplayFormat> ForMagic(uint magic) => magic switch
     {
-        0x50523654 => [new Th06Format()],
+        0x50523654 => [new Th06NcFormat(), new Th06CFormat(), new Th06Format()],
         0x50523754 => [new Th07Format()],
         0x50523854 => [new Th08Format()],
         0x50523954 => [new Th09Format()],
@@ -205,6 +207,65 @@ public unsafe struct Th06StageHeader
     public byte StageRank;                        // +0x0b
     public sbyte PowerItemCountForScore;          // +0x0c
     public fixed sbyte _Padding[3];               // +0x0d
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public unsafe struct Th06CHeader
+{
+    public fixed byte Magic[4];
+    public ushort Version;
+    public byte Character;
+    public byte Rank;
+    public int _Checksum;
+    public byte _RngValue1;
+    public byte _RngValue2;
+    public sbyte _Key;
+    public sbyte _RngValue3;
+    public fixed byte Date[9];
+    public fixed byte Name[9];
+    public fixed byte _Padding22[2];
+    public int Score;
+    public fixed byte _Unknown28[4];
+    public float SlowRate;
+    public fixed byte _Unknown30[8];
+    public fixed ulong _StageOffsets[7];
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public unsafe struct Th06NcHeader
+{
+    public fixed byte Magic[4];
+    public ushort Version;
+    public byte Mode;
+    public byte Character;
+    public byte Rank;
+    public fixed byte _Unknown09[3];
+    public int _Checksum;
+    public byte _RngValue1;
+    public byte _RngValue2;
+    public sbyte _Key;
+    public sbyte _RngValue3;
+    public fixed byte Date[9];
+    public fixed byte Name[9];
+    public fixed byte _Unknown26[2];
+    public int Score;
+    public fixed byte _Unknown2c[8];
+    public float SlowRate;
+    public fixed byte _Unknown38[8];
+    public fixed ulong _StageOffsets[7];
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public unsafe struct Th06NcStageHeader
+{
+    public int Score;
+    public fixed byte _Unknown04[6];
+    public short PointItems;
+    public byte Power;
+    public sbyte Lives;
+    public sbyte Bombs;
+    public byte StageRank;
+    public fixed byte _Padding10[4];
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -1140,6 +1201,109 @@ internal sealed class Th06Format : OldFormat<Th06Header, Th06StageHeader>
             stages.Add(Stage(index + 1, fields, raw, normalized, stageHeader, offset));
         }
         return CreatePropertySet(header, stages, original);
+    }
+}
+
+internal abstract class Th06UpdatedFormat<THeader, TStage> : OldFormat<THeader, TStage>
+    where THeader : unmanaged where TStage : unmanaged
+{
+    protected abstract ushort ReplayVersion { get; }
+    protected abstract int HeaderSize { get; }
+    protected abstract int StageOffsetsOffset { get; }
+    protected abstract int StageHeaderSize { get; }
+    protected virtual Dictionary<string, object?> GeneralFields(ReadOnlySpan<byte> decoded) => [];
+
+    public override ReplayDocument Parse(ReadOnlySpan<byte> buffer)
+    {
+        ReplayDecoder.Require(buffer, HeaderSize);
+        if (ReplayDecoder.U16(buffer, 4) != ReplayVersion) throw new InvalidDataException($"Replay is not {Version}.");
+        var data = Decoder.Decode(buffer).Decoded;
+        var header = ReadHeader(data);
+        var ranges = new List<(int Stage, int Offset, int End)>();
+        for (var index = 0; index < 7; index++)
+        {
+            var rawOffset = BinaryPrimitives.ReadUInt64LittleEndian(data.AsSpan(StageOffsetsOffset + index * 8, 8));
+            if (rawOffset == 0 || rawOffset > int.MaxValue || rawOffset >= (ulong)data.Length) continue;
+            ranges.Add((index + 1, (int)rawOffset, data.Length));
+        }
+        for (var index = 0; index + 1 < ranges.Count; index++)
+            ranges[index] = (ranges[index].Stage, ranges[index].Offset, ranges[index + 1].Offset);
+
+        var stages = new List<ReplayStage>();
+        foreach (var range in ranges)
+        {
+            ReplayDecoder.Require(data, range.Offset + StageHeaderSize);
+            var stageHeader = ReadStageHeader(data.AsSpan(range.Offset));
+            var (raw, normalized) = ReadUpdatedKeys(data, range.Offset + StageHeaderSize, range.End, range.Stage);
+            stages.Add(Stage(range.Stage, [], raw, normalized, stageHeader, range.Offset));
+        }
+        if (stages.Count == 0) throw new InvalidDataException($"{Version} replay has no readable stages.");
+        return CreatePropertySet(header, stages, buffer, GeneralFields(data));
+    }
+
+    private (List<short> Raw, List<ReplayKey> Normalized) ReadUpdatedKeys(ReadOnlySpan<byte> data, int start, int end, int stage)
+    {
+        const int stride = 12;
+        if (end <= start + stride * 2 || end > data.Length) throw new InvalidDataException($"{Version} stage {stage} data is invalid.");
+        var recordCount = (end - start) / stride;
+        var totalFrames = checked((int)ReplayDecoder.U32(data, start + (recordCount - 2) * stride));
+        if (totalFrames < 0 || totalFrames > 10_000_000) throw new InvalidDataException($"{Version} stage {stage} frame count is invalid.");
+        var raw = new List<short>(totalFrames);
+        var normalized = new List<ReplayKey>(totalFrames);
+        var record = 0;
+        ushort current = 0;
+        for (var frame = 0; frame < totalFrames; frame++)
+        {
+            while (record < recordCount)
+            {
+                var recordFrame = ReplayDecoder.U32(data, start + record * stride);
+                if (recordFrame > frame) break;
+                current = ReplayDecoder.U16(data, start + record * stride + 4);
+                record++;
+            }
+            raw.Add(unchecked((short)current));
+            normalized.Add(NormalizeUpdated(current));
+        }
+        return (raw, normalized);
+    }
+
+    private static ReplayKey NormalizeUpdated(ushort input)
+    {
+        var key = (ReplayKey)((input >> 4) & 0xf);
+        if ((input & 0x01) != 0) key |= ReplayKey.Z;
+        if ((input & 0x02) != 0) key |= ReplayKey.X;
+        if ((input & 0x04) != 0) key |= ReplayKey.Shift;
+        if ((input & 0x08) != 0) key |= ReplayKey.Ctrl;
+        return key;
+    }
+}
+
+internal sealed class Th06CFormat : Th06UpdatedFormat<Th06CHeader, Th06StageHeader>
+{
+    public override string Version => "TH06C";
+    protected override ushort ReplayVersion => 0x0103;
+    protected override int HeaderSize => 0x70;
+    protected override int StageOffsetsOffset => 0x38;
+    protected override int StageHeaderSize => 0x10;
+    protected override IReplayDecoder Decoder { get; } = new Th06ReplayDecoder(0x70);
+}
+
+internal sealed class Th06NcFormat : Th06UpdatedFormat<Th06NcHeader, Th06NcStageHeader>
+{
+    public override string Version => "TH06NC";
+    protected override ushort ReplayVersion => 0x010f;
+    protected override int HeaderSize => 0x78;
+    protected override int StageOffsetsOffset => 0x40;
+    protected override int StageHeaderSize => 0x14;
+    protected override IReplayDecoder Decoder { get; } = new Th06ReplayDecoder(0x78, 0x12, 0x13);
+    protected override Dictionary<string, object?> GeneralFields(ReadOnlySpan<byte> decoded)
+    {
+        if (decoded[6] != 3) return [];
+        var raw = ReplayDecoder.U16(decoded, 8);
+        return new Dictionary<string, object?>
+        {
+            ["SpellNumber"] = new SemanticField(raw + 1, raw, "Rank", 8)
+        };
     }
 }
 

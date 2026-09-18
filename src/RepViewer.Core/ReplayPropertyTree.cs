@@ -16,10 +16,11 @@ public sealed class ReplayDocument
         OriginalBytes = originalBytes;
     }
 
-    internal static ReplayDocument Create(string formatId, object header, List<ReplayStage> stages, ReadOnlySpan<byte> original)
+    internal static ReplayDocument Create(string formatId, object header, List<ReplayStage> stages, ReadOnlySpan<byte> original,
+        IEnumerable<KeyValuePair<string, object?>>? generalFields = null)
     {
         var builder = new ReplayPropertyTreeBuilder(formatId);
-        var general = builder.Group("general", [], header);
+        var general = builder.Group("general", generalFields ?? [], header);
         var stageRoot = new ReplayPropertyNode { Name = "stages", Kind = ReplayNodeType.Array, SemanticValue = stages, RawValue = stages };
         foreach (var stage in stages)
         {

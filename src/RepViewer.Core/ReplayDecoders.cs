@@ -71,14 +71,14 @@ internal interface IReplayDecoder
     ReplayDecodedData Decode(ReadOnlySpan<byte> buffer);
 }
 
-internal sealed class Th06ReplayDecoder : IReplayDecoder
+internal sealed class Th06ReplayDecoder(int requiredLength = 0x50, int keyOffset = 0x0e, int decryptStartOffset = 0x0f) : IReplayDecoder
 {
     public ReplayDecodedData Decode(ReadOnlySpan<byte> buffer)
     {
-        ReplayDecoder.Require(buffer, 0x50);
+        ReplayDecoder.Require(buffer, requiredLength);
         var data = buffer.ToArray();
-        var key = data[0x0e];
-        for (var index = 0x0f; index < data.Length; index++, key = unchecked((byte)(key + 7)))
+        var key = data[keyOffset];
+        for (var index = decryptStartOffset; index < data.Length; index++, key = unchecked((byte)(key + 7)))
             data[index] = unchecked((byte)(data[index] - key));
         return new ReplayDecodedData(data, data);
     }
@@ -181,4 +181,3 @@ internal sealed class ModernReplayDecoder(
         }
     }
 }
-

@@ -127,7 +127,7 @@ public static class ReplayKeyRateStatistics
         var down = (keys & ReplayKey.Down) != 0;
         var left = (keys & ReplayKey.Left) != 0;
         var right = (keys & ReplayKey.Right) != 0;
-        var earlyOverride = version is "TH06" or "TH07";
+        var earlyOverride = version is "TH06" or "TH06C" or "TH06NC" or "TH07";
 
         if (up && down)
         {
@@ -160,4 +160,3 @@ public static class ReplayKeyRateStatistics
         return result;
     }
 }
-
