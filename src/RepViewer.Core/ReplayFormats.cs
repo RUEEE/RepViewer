@@ -1554,6 +1554,7 @@ internal abstract class ModernFormat<THeader, TStage> : ReplayFormat<THeader, TS
 
         var stages = new List<ReplayStage>();
         var stageHeaders = new List<object>();
+        var lengthIssues = new List<ReplayIssue>();
         var stageOffset = HeaderSize;
         for (var index = 0; index < count; index++)
         {
@@ -1575,13 +1576,17 @@ internal abstract class ModernFormat<THeader, TStage> : ReplayFormat<THeader, TS
             var stride = hasSpecialFrameLayout ? specialStride
                 : frameCount * 6 + DivideRoundUp(frameCount, 30) == packedStageLength ? 6
                 : frameCount * 3 + DivideRoundUp(frameCount, 30) == packedStageLength ? 3
+                : Math.Abs((long)frameCount * 6 + DivideRoundUp(frameCount, 30) - packedStageLength) <= 7 ? 6
+                : Math.Abs((long)frameCount * 3 + DivideRoundUp(frameCount, 30) - packedStageLength) <= 4 ? 3
+                : AllowTruncatedStage(index + 1, count) ? 6
                 : throw new InvalidDataException($"Stage {index + 1} has inconsistent frame length.");
+            var stageEnd = (int)Math.Min(data.Length, (long)replayOffset + packedStageLength);
+            if (stageEnd < replayOffset) throw new InvalidDataException("Invalid stage data length.");
             var readableFrameCount = frameCount;
-            if (replayOffset + readableFrameCount * stride > data.Length)
+            if ((long)readableFrameCount * stride > stageEnd - replayOffset)
             {
-                if (!AllowTruncatedStage(index + 1, count))
-                    ReplayDecoder.Require(data, replayOffset + readableFrameCount * stride);
-                readableFrameCount = Math.Max(0, data.Length - replayOffset) / stride;
+                // Reserve the FPS tail when recovering a slightly inconsistent count.
+                readableFrameCount = Math.Max(0, (stageEnd - replayOffset - DivideRoundUp(frameCount, 30)) / stride);
             }
 
             var keys = ReadKeys(data.AsSpan(replayOffset), readableFrameCount, stride);
@@ -1589,8 +1594,12 @@ internal abstract class ModernFormat<THeader, TStage> : ReplayFormat<THeader, TS
             var fields = new Dictionary<string, object?>();
             ReplaySpecialFields.Enrich(Version, stageId, fields, StructMarshal.ToBytes(stageHeader), header);
             var fpsOffset = replayOffset + keys.BytesRead;
-            var declaredFpsCount = DivideRoundUp(readableFrameCount, 30);
-            var actualFpsCount = Math.Min(declaredFpsCount, Math.Max(0, data.Length - fpsOffset));
+            var declaredFpsCount = DivideRoundUp(keys.NormalizedKeys.Count, 30);
+            var actualFpsCount = Math.Min(declaredFpsCount, Math.Max(0, stageEnd - fpsOffset));
+            if (readableFrameCount != frameCount || actualFpsCount != declaredFpsCount ||
+                (!hasSpecialFrameLayout && packedStageLength != keys.BytesRead + declaredFpsCount))
+                lengthIssues.Add(new ReplayIssue("stage-length-boundary", ReplayIssueSeverity.Warning,
+                    $"Stage {stageId} has inconsistent lengths; read {keys.NormalizedKeys.Count} frames and {actualFpsCount} FPS samples from available data.", stageOffset));
             var rawFps = data.AsSpan(fpsOffset, actualFpsCount).ToArray().ToList();
             stages.Add(new ReplayStage
             {
@@ -1606,7 +1615,9 @@ internal abstract class ModernFormat<THeader, TStage> : ReplayFormat<THeader, TS
             stageOffset += packedStageLength + StageHeaderSize;
         }
         ApplyPostStageFields(header, stageHeaders, stages);
-        return CreatePropertySet(header, stages, original);
+        var document = CreatePropertySet(header, stages, original);
+        document.Issues.AddRange(lengthIssues);
+        return document;
     }
 
     // Default contiguous stage frame layout used by TH10-TH18/TH20 normal stages.

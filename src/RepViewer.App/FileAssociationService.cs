@@ -128,6 +128,7 @@ internal static class FileAssociationService
                      .Concat(OwnedThumbnailHandlers.Where(classId => !classId.Equals(ThumbnailClassId, StringComparison.OrdinalIgnoreCase))))
             root.DeleteSubKeyTree($@"{ClassesPath}\CLSID\{{{obsoleteClassId}}}", false);
         SetAssociationState(root, true, installDirectory, comHost, false);
+        UnloadReplayShellHosts();
         if (refreshExplorer) RefreshExplorerCaches();
         else NotifyShell();
     }
@@ -302,6 +303,64 @@ internal static class FileAssociationService
         try { Process.Start(new ProcessStartInfo(explorer) { UseShellExecute = true }); }
         catch (System.ComponentModel.Win32Exception) { }
         NotifyShell();
+    }
+
+    private static void UnloadReplayShellHosts()
+    {
+        // A 32-bit app cannot enumerate the modules of the 64-bit thumbnail host.
+        // Use a hidden native PowerShell helper on 64-bit Windows in that case.
+        if (Environment.Is64BitOperatingSystem && !Environment.Is64BitProcess)
+        {
+            const string script = """
+                $sessionId = [Diagnostics.Process]::GetCurrentProcess().SessionId
+                foreach ($hostProcess in [Diagnostics.Process]::GetProcessesByName('dllhost')) {
+                    try {
+                        if ($hostProcess.SessionId -ne $sessionId) { continue }
+                        foreach ($module in $hostProcess.Modules) {
+                            if ($module.ModuleName -like 'RepViewer.Shell.*.comhost.dll') {
+                                $hostProcess.Kill()
+                                $hostProcess.WaitForExit(5000) | Out-Null
+                                break
+                            }
+                        }
+                    } catch { } finally { $hostProcess.Dispose() }
+                }
+                """;
+            var executable = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+                "Sysnative", "WindowsPowerShell", "v1.0", "powershell.exe");
+            var start = new ProcessStartInfo(executable)
+            {
+                UseShellExecute = false, CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden
+            };
+            start.ArgumentList.Add("-NoProfile");
+            start.ArgumentList.Add("-NonInteractive");
+            start.ArgumentList.Add("-EncodedCommand");
+            start.ArgumentList.Add(Convert.ToBase64String(Encoding.Unicode.GetBytes(script)));
+            try
+            {
+                using var helper = Process.Start(start);
+                if (helper is not null && !helper.WaitForExit(15000)) helper.Kill();
+            }
+            catch (System.ComponentModel.Win32Exception) { }
+            catch (InvalidOperationException) { }
+            return;
+        }
+
+        var sessionId = Process.GetCurrentProcess().SessionId;
+        foreach (var process in Process.GetProcessesByName("dllhost"))
+        {
+            using (process)
+            {
+                try
+                {
+                    if (process.SessionId != sessionId || !HasLoadedReplayShell(process)) continue;
+                    process.Kill();
+                    process.WaitForExit(5000);
+                }
+                catch (InvalidOperationException) { }
+                catch (System.ComponentModel.Win32Exception) { }
+            }
+        }
     }
 
     private static bool HasLoadedReplayShell(Process process)

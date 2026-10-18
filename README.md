@@ -24,7 +24,7 @@ Thanks to the following projects:
 
 # RepViewer
 
-RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查看器。当前版本为 **1.2.0.0**。
+RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查看器。当前版本为 **1.2.1.0**。
 
 ## 功能
 
@@ -38,6 +38,13 @@ RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查�
 - 支持中文/英文 YAML 展示配置、100%～200% 界面缩放以及插件开关。
 
 ## 更新记录
+
+### 1.2.1.0（2026-10-18）
+
+- 修复 TH11 录像 `th11_udaa.rpy` 因结束标记与帧率采样数量的边界差异而无法读取的问题。
+- 对轻微的 Stage 数据长度不一致尝试恢复完整可用帧，并将帧率读取限制在当前 Stage 内；恢复时记录长度异常。
+- 关联 `.rpy` 时自动结束加载了 RepViewer Shell DLL 的缩略图宿主，使新组件能够重新加载。
+- 修复 x86 主程序无法检测 x64 缩略图宿主、导致重新关联后仍使用旧解析器的问题。
 
 ### 1.2.0.0（2026-09-18）
 
@@ -98,7 +105,7 @@ dotnet msbuild .\RepViewer.Portable.proj -t:Publish
 
 # RepViewer (English)
 
-RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The current version is **1.2.0.0**.
+RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The current version is **1.2.1.0**.
 
 ## Features
 
@@ -112,6 +119,13 @@ RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The curr
 - Supports Chinese/English YAML presentation, 100%–200% interface scaling, and configurable plugins.
 
 ## Changelog
+
+### 1.2.1.0 (2026-10-18)
+
+- Fixed TH11 replay `th11_udaa.rpy` failing to load because of a boundary difference between the terminal key record and FPS sample count.
+- Recover complete available frames from minor stage-length inconsistencies, restrict FPS reads to the current stage, and record length warnings when recovery is needed.
+- Automatically stop thumbnail hosts that have loaded RepViewer Shell DLLs when associating `.rpy` files, allowing updated components to load.
+- Fixed the x86 application failing to detect x64 thumbnail hosts and leaving an old parser loaded after reassociation.
 
 ### 1.2.0.0 (2026-09-18)
 
