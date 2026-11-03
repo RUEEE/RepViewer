@@ -24,7 +24,7 @@ Thanks to the following projects:
 
 # RepViewer
 
-RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查看器。当前版本为 **1.2.1.0**。
+RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查看器。当前版本为 **1.3.1.0**。
 
 ## 功能
 
@@ -38,6 +38,12 @@ RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查�
 - 支持中文/英文 YAML 展示配置、100%～200% 界面缩放以及插件开关。
 
 ## 更新记录
+
+### 1.3.1.0（2026-11-03）
+
+- TH08 符卡练习的显示编号为 206～222（原始值 205～221）时，难度显示为 `Last Word`，并保留原始难度值。
+- TH08 Last Word 录像缩略图使用 `Diff_Lw.png` 难度图。
+- TH08 的 Stage 标签按内部 ID 1～9 映射为 `1、2、3、4A、4B、5、6A、6B、7`，内部 Stage ID 保持不变。
 
 ### 1.2.1.0（2026-10-18）
 
@@ -105,7 +111,7 @@ dotnet msbuild .\RepViewer.Portable.proj -t:Publish
 
 # RepViewer (English)
 
-RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The current version is **1.2.1.0**.
+RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The current version is **1.3.1.0**.
 
 ## Features
 
@@ -119,6 +125,12 @@ RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The curr
 - Supports Chinese/English YAML presentation, 100%–200% interface scaling, and configurable plugins.
 
 ## Changelog
+
+### 1.3.1.0 (2026-11-03)
+
+- TH08 Spell Practice replays with display spell numbers 206–222 (stored values 205–221) now show `Last Word` as the difficulty while preserving the raw difficulty value.
+- TH08 Last Word thumbnails now use the `Diff_Lw.png` difficulty artwork.
+- TH08 stage tabs map internal IDs 1–9 to `1, 2, 3, 4A, 4B, 5, 6A, 6B, 7`, preserving internal stage IDs.
 
 ### 1.2.1.0 (2026-10-18)
 

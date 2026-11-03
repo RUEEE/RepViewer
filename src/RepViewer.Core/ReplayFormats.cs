@@ -1442,7 +1442,11 @@ internal sealed class Th08Format : OldFormat<Th08Header, Th08StageHeader>
             }
             stages.Add(stage);
         }
-        return CreatePropertySet(header, stages, original);
+        var generalFields = new Dictionary<string, object?>();
+        // SpellNumber == -1 denotes ordinary play; 205..221 are Last Words.
+        if (header.SpellNumber is >= 205 and <= 221)
+            generalFields["Rank"] = new SemanticField(5, header.Rank, "Rank", 0x03);
+        return CreatePropertySet(header, stages, original, generalFields);
     }
 
     private static ReplayStage ParseStage(ReadOnlySpan<byte> data, int stageId, int offset, int end)

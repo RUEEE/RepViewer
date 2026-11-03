@@ -44,7 +44,11 @@ internal sealed record ShellMetadata(string Game, string Name, string Difficulty
             character = Character(game, characterValue / 2);
             label = characterValue >= 0 ? ((char)('A' + characterValue % 2)).ToString() : null;
         }
-        else if (game == "th08") label = Th08Route(replay);
+        else if (game == "th08")
+        {
+            label = Th08Route(replay);
+            if (Number("Rank") == 5) difficulty = "Diff_Lw.png";
+        }
         else if (game == "th095") { character = "Aya.png"; lowerLeft = $"{Number("LevelId")}-{Number("SubLevelId")}"; label = null; difficulty = ""; }
         else if (game == "th125")
         {

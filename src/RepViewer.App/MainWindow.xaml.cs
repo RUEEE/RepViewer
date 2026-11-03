@@ -12,7 +12,7 @@ namespace RepViewer.App;
 
 public partial class MainWindow : Window
 {
-    private static readonly string ApplicationVersion = typeof(MainWindow).Assembly.GetName().Version?.ToString(4) ?? "1.2.1.0";
+    private static readonly string ApplicationVersion = typeof(MainWindow).Assembly.GetName().Version?.ToString(4) ?? "1.3.1.0";
     private readonly ReplayPluginHost _plugins = new();
     private readonly DirectionPunishmentTable _punishment = DirectionPunishmentTable.CreateDefault();
     private HashSet<string> _enabledPlugins;
@@ -110,12 +110,20 @@ public partial class MainWindow : Window
         for (var index = 0; index < _replay!.Stages.Count; index++)
             ReplayTabs.Items.Add(new TabItem
             {
-                Header = $"{_presentation.Text("section.stage")} {_replay.Stages[index].StageId}",
+                Header = $"{_presentation.Text("section.stage")} {StageTabLabel(_replay.Stages[index].StageId)}",
                 Tag = index
             });
         ReplayTabs.SelectedIndex = 0;
         EnsureSelectedScope();
     }
+
+    private string StageTabLabel(int stageId) => _replay?.Identity.GameId == "th08"
+        ? stageId switch
+        {
+            4 => "4A", 5 => "4B", 6 => "5", 7 => "6A", 8 => "6B", 9 => "7",
+            _ => stageId.ToString(CultureInfo.InvariantCulture)
+        }
+        : stageId.ToString(CultureInfo.InvariantCulture);
 
     private void ReplayTabsChanged(object sender, SelectionChangedEventArgs e)
     {

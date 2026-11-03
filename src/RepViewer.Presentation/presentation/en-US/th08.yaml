@@ -22,6 +22,7 @@ fields:
       2: Hard
       3: Lunatic
       4: Extra
+      5: Last Word
   YoukaiRate:
     label: Youkai rate
     format: percent
