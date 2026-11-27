@@ -12,7 +12,7 @@ namespace RepViewer.App;
 
 public partial class MainWindow : Window
 {
-    private static readonly string ApplicationVersion = typeof(MainWindow).Assembly.GetName().Version?.ToString(4) ?? "1.3.1.0";
+    private static readonly string ApplicationVersion = typeof(MainWindow).Assembly.GetName().Version?.ToString(4) ?? "1.4.0.0";
     private readonly ReplayPluginHost _plugins = new();
     private readonly DirectionPunishmentTable _punishment = DirectionPunishmentTable.CreateDefault();
     private HashSet<string> _enabledPlugins;
@@ -64,6 +64,7 @@ public partial class MainWindow : Window
             _presentation = PresentationCatalog.Load(PresentationCatalog.DefaultRoot, _locale, _replay.Identity.GameId);
             FileText.Text = _path;
             ExportButton.IsEnabled = true;
+            SaveRepairedButton.Visibility = Th10ReplayRepair.CanRepair(replay) ? Visibility.Visible : Visibility.Collapsed;
             PopulateReplayTabs();
             StatusText.Text = $"{_replay.Identity.FormatId} · {_replay.Stages.Count} {_presentation.Text("unit.stages")}";
             ApplyLanguage();
@@ -289,6 +290,29 @@ public partial class MainWindow : Window
 
     private static string Csv(string scope, DisplayField field) => string.Join(',', new[] { scope, field.Label, field.Text, DisplayFormatter.FormatRaw(field.RawValue) }.Select(value => $"\"{value.Replace("\"", "\"\"")}\""));
 
+    private void SaveRepairedClick(object sender, RoutedEventArgs e)
+    {
+        if (_replay is null || _path is null || !Th10ReplayRepair.CanRepair(_replay)) return;
+        var dialog = new SaveFileDialog
+        {
+            Filter = "Touhou replay (*.rpy)|*.rpy", FileName = $"{Path.GetFileNameWithoutExtension(_path)}_fixed.rpy",
+            InitialDirectory = Path.GetDirectoryName(_path)
+        };
+        if (dialog.ShowDialog(this) != true) return;
+        if (string.Equals(Path.GetFullPath(dialog.FileName), Path.GetFullPath(_path), StringComparison.OrdinalIgnoreCase))
+        {
+            MessageBox.Show(this, _presentation.Text("repair.chooseDifferentFile"), "RepViewer", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        try
+        {
+            var repaired = Th10ReplayRepair.Repair(_replay);
+            File.WriteAllBytes(dialog.FileName, repaired);
+            StatusText.Text = $"{_presentation.Text("status.saved")}: {dialog.FileName}";
+        }
+        catch (Exception exception) { MessageBox.Show(this, exception.Message, "RepViewer", MessageBoxButton.OK, MessageBoxImage.Error); }
+    }
+
     private void SettingsClick(object sender, RoutedEventArgs e)
     {
         var associated = false;
@@ -383,6 +407,7 @@ public partial class MainWindow : Window
         Title = $"{_presentation.Text("app.title")} {ApplicationVersion}"; OpenButton.Content = _presentation.Text("command.open");
         ExportButton.Content = _presentation.Text("command.export"); SettingsButton.Content = _presentation.Text("command.settings");
         EncodingLabel.Text = _presentation.Text("settings.commentEncoding");
+        SaveRepairedButton.Content = _presentation.Text("command.saveRepaired");
     }
 
     private ChartNumberFormatOptions ChartNumberFormat => new(_chartUseScientificNotation, _chartUseThousandsSeparator);

@@ -1565,6 +1565,7 @@ internal abstract class ModernFormat<THeader, TStage> : ReplayFormat<THeader, TS
             var stageHeader = ReadStageHeader(data.AsSpan(stageOffset));
             stageHeaders.Add(stageHeader);
             var frameCount = FrameCount(stageHeader);
+            var declaredFrameCount = frameCount;
             var packedStageLength = PackedStageLength(stageHeader);
             var replayOffset = stageOffset + StageHeaderSize;
             var hasSpecialFrameLayout = TryReadSpecialFrameLayout(data, stageOffset, stageHeader, out var specialFrameCount, out var specialPackedLength, out var specialReplayOffset, out var specialStride);
@@ -1574,6 +1575,10 @@ internal abstract class ModernFormat<THeader, TStage> : ReplayFormat<THeader, TS
                 packedStageLength = specialPackedLength;
                 replayOffset = specialReplayOffset;
             }
+            var recoveredFrames = 0;
+            var recoveredFrameCount = !hasSpecialFrameLayout &&
+                TryRecoverFrameCount(frameCount, packedStageLength, out recoveredFrames);
+            if (recoveredFrameCount) frameCount = recoveredFrames;
             if (frameCount < 0 || frameCount > 2_000_000)
                 throw new InvalidDataException($"Implausible frame count at stage {index + 1}: {frameCount}.");
 
@@ -1597,6 +1602,12 @@ internal abstract class ModernFormat<THeader, TStage> : ReplayFormat<THeader, TS
             var stageId = StageId(stageHeader, index + 1);
             var fields = new Dictionary<string, object?>();
             ReplaySpecialFields.Enrich(Version, stageId, fields, StructMarshal.ToBytes(stageHeader), header);
+            if (recoveredFrameCount)
+            {
+                fields["FrameCount"] = new SemanticField(keys.NormalizedKeys.Count, StructAccess.Get(stageHeader, "FrameCount"), "FrameCount", 0x04);
+                lengthIssues.Add(new ReplayIssue("stage-frame-count-recovered", ReplayIssueSeverity.Warning,
+                    $"Stage {stageId} declares {declaredFrameCount} frames; recovered {keys.NormalizedKeys.Count} frames from its data length.", stageOffset + 4));
+            }
             var fpsOffset = replayOffset + keys.BytesRead;
             var declaredFpsCount = DivideRoundUp(keys.NormalizedKeys.Count, 30);
             var actualFpsCount = Math.Min(declaredFpsCount, Math.Max(0, stageEnd - fpsOffset));
@@ -1634,6 +1645,12 @@ internal abstract class ModernFormat<THeader, TStage> : ReplayFormat<THeader, TS
 
     // Default strict length check used by TH10-TH18 and scene games; TH20 overrides for its truncated final stage sample.
     public virtual bool AllowTruncatedStage(int stageId, int stageCount) => false;
+
+    protected virtual bool TryRecoverFrameCount(int declaredFrames, int packedLength, out int frames)
+    {
+        frames = 0;
+        return false;
+    }
 
     // Default modern key stream used by TH11-TH18 and TH09.5/TH12.5/TH16.5.
     // TH10 and TH20 override because their press/release state transitions differ.
@@ -1690,6 +1707,21 @@ internal sealed class Th10Format : ModernFormat<Th10Header, Th10Stage>
     public override string Version => "TH10";
     protected override IReplayDecoder Decoder { get; } = new ModernReplayDecoder(base1: 0xaa, block2: 0x80, base2: 0x3d, add2: 0x7a);
     protected override int ShiftBit => 4;
+
+    protected override bool TryRecoverFrameCount(int declaredFrames, int packedLength, out int frames)
+    {
+        frames = 0;
+        // TH10 can save an incorrect count (including twice the real count).
+        // Its six-byte records and one FPS byte per 30 frames determine the
+        // count independently, provided the entire stage length matches exactly.
+        if (packedLength < 0 || (long)declaredFrames * 6 + (declaredFrames + 29L) / 30 == packedLength)
+            return false;
+        var candidate = (long)packedLength * 30 / 181;
+        if (candidate <= 0 || candidate > 2_000_000 ||
+            candidate * 6 + (candidate + 29) / 30 != packedLength) return false;
+        frames = (int)candidate;
+        return frames != declaredFrames;
+    }
 
 }
 

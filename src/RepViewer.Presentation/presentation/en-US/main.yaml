@@ -3,6 +3,8 @@ ui:
   command.open: Open
   command.save: Save comment
   command.export: Export
+  command.saveRepaired: Save repaired copy
+  repair.chooseDifferentFile: Choose a different filename to preserve the original replay.
   command.settings: Settings
   section.general: General
   section.stages: Stages

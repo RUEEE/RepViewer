@@ -4,6 +4,7 @@
       <StackPanel Orientation="Horizontal">
         <Button x:Name="OpenButton" Click="OpenClick"/>
         <Button x:Name="ExportButton" Click="ExportClick" IsEnabled="False"/>
+        <Button x:Name="SaveRepairedButton" Click="SaveRepairedClick" Visibility="Collapsed"/>
         <Button x:Name="SettingsButton" Click="SettingsClick"/>
         <TextBlock x:Name="FileText" Margin="12,0,0,0" VerticalAlignment="Center" Foreground="#596273" TextTrimming="CharacterEllipsis"/>
       </StackPanel>

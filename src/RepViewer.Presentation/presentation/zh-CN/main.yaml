@@ -3,6 +3,8 @@ ui:
   command.open: 打开
   command.save: 保存注释
   command.export: 导出
+  command.saveRepaired: 另存修复版
+  repair.chooseDifferentFile: 请选择与原录像不同的文件名。
   command.settings: 设置
   section.general: 总体
   section.stages: 分面

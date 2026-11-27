@@ -24,7 +24,7 @@ Thanks to the following projects:
 
 # RepViewer
 
-RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查看器。当前版本为 **1.3.1.0**。
+RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查看器。当前版本为 **1.4.0.0**。
 
 ## 功能
 
@@ -38,6 +38,23 @@ RepViewer 是一个面向东方 Project 录像文件（`.rpy`）的 Windows 查�
 - 支持中文/英文 YAML 展示配置、100%～200% 界面缩放以及插件开关。
 
 ## 更新记录
+
+### 1.4.0.0（2026-11-27）
+
+- 支持读取 TH10 重复保存 bug 产生的错误帧数录像，保留原始值并从 Stage 数据长度恢复实际帧数。
+- 新增“另存修复版”按钮，修正 TH10 各面帧数，使用 LZSS 字典匹配压缩并重新加密；保留按键、帧率、其它字段及 USER/注释等尾部数据，保存前执行解码和读回验证。
+- 错误录像缩略图在右上角叠加 `Error.png`，机签显示为红色斜体；修复后不再检测到异常的副本恢复正常样式。
+- 这一错误缩略图规则适用于所有作品，后续新增类似 bug 录像支持时也必须沿用。
+
+#### TH10 重复保存 bug 与修复方法
+
+同一局游戏重复保存录像时，TH10 未在保存前清零 Stage 头中的帧数累加器，导致第二次保存写入实际帧数的两倍、第三次为三倍，以此类推。相邻的数据长度字段和实际输入数据没有同步倍增，游戏播放时可能越过本面的真实输入区，误读帧率或后续 Stage 数据而失去同步。
+
+RepViewer 根据完整 Stage 数据长度 `L = 6 × N + ceil(N / 30)` 恢复记录数 `N`，其中每帧输入占 6 字节，每 30 帧对应一个帧率样本。仅在长度精确匹配时恢复；界面保留错误的原始帧数，同时使用恢复值读取数据并记录异常。
+
+打开可修复录像后，点击“另存修复版”并选择新文件名。修复仅替换解码后各面头部的帧数字段，随后重新进行 LZSS 压缩及 TH10 加密，更新压缩长度和 USER 偏移，保持尾部数据不变。输出会重新解码、比对所有解码字节及逐面按键/帧率后才允许保存。原文件不会被覆盖；游戏内实际播放效果仍需核验。
+
+样本 `th10_19.rpy` 六面的声明帧数均为实际记录数的两倍；恢复后记录数依次为 `8169、11169、13595、15619、15422、19553`。LZSS 修复副本约 71 KB，与原文件约 71 KB 接近。
 
 ### 1.3.1.0（2026-11-03）
 
@@ -111,7 +128,7 @@ dotnet msbuild .\RepViewer.Portable.proj -t:Publish
 
 # RepViewer (English)
 
-RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The current version is **1.3.1.0**.
+RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The current version is **1.4.0.0**.
 
 ## Features
 
@@ -125,6 +142,23 @@ RepViewer is a Windows viewer for Touhou Project replay files (`.rpy`). The curr
 - Supports Chinese/English YAML presentation, 100%–200% interface scaling, and configurable plugins.
 
 ## Changelog
+
+### 1.4.0.0 (2026-11-27)
+
+- Added recovery for incorrect TH10 frame counts caused by repeated replay saves, retaining raw values and deriving record counts from stage data lengths.
+- Added “Save repaired copy” for affected TH10 replays, using dictionary-based LZSS compression and re-encryption, preserving inputs, FPS, other fields, and trailing USER/comment data, with decode and read-back verification before saving.
+- Erroneous replay thumbnails show `Error.png` in the upper-right corner and render the player name in red italics. Repaired copies with no detected issues use the normal style.
+- This error-thumbnail convention applies to every game and must also be used for future replay-bug support.
+
+#### TH10 repeated-save bug and repair
+
+When the same run is saved repeatedly, TH10 does not reset the stage frame-count accumulator before saving. The second save records twice the actual count, the third three times, and so on. Stage data lengths and actual inputs do not grow accordingly. Playback can run beyond the real input region, interpret FPS or subsequent-stage data as inputs, and desynchronize.
+
+RepViewer recovers record count `N` from a complete stage length `L = 6 × N + ceil(N / 30)`: six bytes per input record and one FPS sample per 30 frames. Recovery requires an exact length match. The UI retains the incorrect raw count, uses the recovered count for parsing, and records an issue.
+
+Open an eligible replay, click “Save repaired copy”, and choose a new filename. Repair changes only the decoded per-stage frame counts, recompresses with LZSS, re-encrypts using TH10's algorithm, and updates the packed length and USER offset while preserving trailing data. Output is decoded again and checked against all intended decoded bytes and per-stage input/FPS data before saving. The original cannot be overwritten; actual in-game playback still needs verification.
+
+All six declared counts in `th10_19.rpy` are doubled; recovered counts are `8169, 11169, 13595, 15619, 15422, 19553`. The compressed repair is about 71 KB, close to the original file size.
 
 ### 1.3.1.0 (2026-11-03)
 

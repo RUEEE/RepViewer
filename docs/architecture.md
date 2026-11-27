@@ -34,6 +34,10 @@ The current YAML reader intentionally supports a safe declarative subset: nested
 
 `RepViewer.Shell` is a separate COM-hosted assembly. It catches parser/rendering failures and returns a generic replay image so malformed files cannot propagate managed exceptions into Explorer.
 
+Error thumbnails are a cross-game requirement: Core recovery and bug detection must emit `ReplayDocument.Issues` while preserving raw fields. Any Warning/Error causes Shell to overlay `Error.png` in the upper-right and draw the player name in red italics. A complete parse failure uses the generic image with the same error overlay. Future game-specific replay bugs must use this shared mechanism, not TH10-only rendering. Repaired copies are evaluated again from their own bytes and use the normal style when no issues remain.
+
+`Th10ReplayRepair` provides the current TH10 frame-count repair. It derives counts from exact stage sizes, changes only decoded frame-count fields, compresses using an 8192-byte LZSS window with 3–18-byte matches, applies the inverse encryption passes, relocates the untouched trailing data, and verifies decoded bytes and input/FPS equality. The App exposes this through “Save repaired copy” for eligible replays and disallows overwriting the source.
+
 ## UI and plugin boundaries
 
 The desktop UI uses an outer `General / Stage 1 ... Stage N` tab strip. A stage page is created lazily when first selected and contains inner tabs emitted by plugins: stage properties, per-frame keys, FPS samples, FPS chart and direction transitions.

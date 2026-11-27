@@ -9,7 +9,7 @@ using RepViewer.Core;
 
 namespace RepViewer.Shell;
 
-internal sealed record ShellMetadata(string Game, string Name, string DifficultyAsset, string? CharacterAsset, string? ShotTypeLabel, string? SpecialAsset, string? LowerLeftLabel)
+internal sealed record ShellMetadata(string Game, string Name, string DifficultyAsset, string? CharacterAsset, string? ShotTypeLabel, string? SpecialAsset, string? LowerLeftLabel, bool HasError = false)
 {
     public static ShellMetadata Empty { get; } = new("default", "", "", null, null, null, null);
     public static ShellMetadata From(ReplayDocument replay)
@@ -62,7 +62,8 @@ internal sealed record ShellMetadata(string Game, string Name, string Difficulty
         else if (game == "th16") special = new[] { "Season_Spring.png", "Season_Summer.png", "Season_Autumn.png", "Season_Winter.png", "Season_Full.png" }.ElementAtOrDefault(shot);
         else if (game == "th17") special = new[] { "Ghost_Wolf.png", "Ghost_Otter.png", "Ghost_Eagle.png" }.ElementAtOrDefault(shot);
         else if (game == "th20") special = new[] { "Stone_R1.png", "Stone_R2.png", "Stone_B1.png", "Stone_B2.png", "Stone_Y1.png", "Stone_Y2.png", "Stone_G1.png", "Stone_G2.png" }.ElementAtOrDefault(Number("ShotType1"));
-        return new ShellMetadata(game, name, difficulty, character, label, special, lowerLeft);
+        return new ShellMetadata(game, name, difficulty, character, label, special, lowerLeft,
+            replay.Issues.Any(issue => issue.Severity is ReplayIssueSeverity.Warning or ReplayIssueSeverity.Error));
     }
 
     private static string? Th08Route(ReplayDocument replay)
@@ -138,10 +139,11 @@ internal static class ShellRenderer
             var badgeWidth = version.Length >= 3 ? 210d : 165d;
             var badge = new Rect(446 - badgeWidth, 16, badgeWidth, 108); drawing.DrawRectangle(Brushes.White, border, badge);
             CenteredText(drawing, version, 92, FontWeights.Bold, badge);
+            var difficultyBounds = new Rect(40, 328, 145, 140);
             if (details)
             {
                 if (metadata.LowerLeftLabel is { Length: > 0 }) DrawLowerLeftLabel(drawing, metadata.LowerLeftLabel);
-                else DrawAsset(drawing, metadata.DifficultyAsset, new Rect(40, 328, 145, 140));
+                else difficultyBounds = DrawAsset(drawing, metadata.DifficultyAsset, difficultyBounds);
                 var characterRight = metadata.ShotTypeLabel is null ? 463d : 441.5d;
                 var characterBottom = metadata.ShotTypeLabel is null ? 468d : 449d;
                 var character = DrawAssetRight(drawing, metadata.CharacterAsset, characterRight, characterBottom - 171, 193.5, 171);
@@ -149,9 +151,13 @@ internal static class ShellRenderer
                 if (character is Rect labelTarget && metadata.ShotTypeLabel is { Length: > 0 })
                     DrawOutlinedType(drawing, metadata.ShotTypeLabel, labelTarget, metadata.Game == "th128");
                 var displayName = metadata.Name.Length > 4 ? metadata.Name[..4] + "\n" + metadata.Name[4..] : metadata.Name;
-                Text(drawing, displayName, 94, FontWeights.Bold, new Rect(40, 112, 410, 250));
+                Text(drawing, displayName, 94, FontWeights.Bold, new Rect(40, 112, 410, 250), metadata.HasError);
             }
             else CenteredText(drawing, "REP", 116, FontWeights.Bold, new Rect(40, 145, 432, 315));
+            if (metadata.HasError)
+            {
+                DrawAsset(drawing, "Error.png", new Rect(282, 130, 192, 192));
+            }
             drawing.Pop();
         }
         var bitmap = new RenderTargetBitmap(size, size, 96, 96, PixelFormats.Pbgra32); bitmap.Render(visual); bitmap.Freeze(); return bitmap;
@@ -183,10 +189,12 @@ internal static class ShellRenderer
         if (!File.Exists(path)) return null;
         var image = new BitmapImage(); image.BeginInit(); image.CacheOption = BitmapCacheOption.OnLoad; image.UriSource = new Uri(path); image.EndInit(); image.Freeze(); return image;
     }
-    private static void DrawAsset(DrawingContext drawing, string? file, Rect bounds)
+    private static Rect DrawAsset(DrawingContext drawing, string? file, Rect bounds)
     {
-        var image = LoadAsset(file); if (image is null) return; var ratio = Math.Min(bounds.Width / image.PixelWidth, bounds.Height / image.PixelHeight);
-        drawing.DrawImage(image, new Rect(bounds.Left, bounds.Bottom - image.PixelHeight * ratio, image.PixelWidth * ratio, image.PixelHeight * ratio));
+        var image = LoadAsset(file); if (image is null) return bounds; var ratio = Math.Min(bounds.Width / image.PixelWidth, bounds.Height / image.PixelHeight);
+        var target = new Rect(bounds.Left, bounds.Bottom - image.PixelHeight * ratio, image.PixelWidth * ratio, image.PixelHeight * ratio);
+        drawing.DrawImage(image, target);
+        return target;
     }
     private static Rect? DrawAssetRight(DrawingContext drawing, string? file, double right, double top, double maxWidth, double maxHeight)
     {
@@ -231,10 +239,11 @@ internal static class ShellRenderer
         var formatted = new FormattedText(text, System.Globalization.CultureInfo.InvariantCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Cambria"), FontStyles.Normal, weight, FontStretches.Normal), size, Brushes.Black, 1);
         drawing.DrawText(formatted, new Point(bounds.Left + (bounds.Width - formatted.WidthIncludingTrailingWhitespace) / 2, bounds.Top + (bounds.Height - formatted.Height) / 2));
     }
-    private static void Text(DrawingContext drawing, string text, double size, FontWeight weight, Rect bounds)
+    private static void Text(DrawingContext drawing, string text, double size, FontWeight weight, Rect bounds, bool hasError = false)
     {
         var formatted = new FormattedText(text, System.Globalization.CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-            new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, weight, FontStretches.Normal), size, Brushes.Black, 1)
+            new Typeface(new FontFamily("Segoe UI"), hasError ? FontStyles.Italic : FontStyles.Normal, weight, FontStretches.Normal),
+            size, hasError ? Brushes.Red : Brushes.Black, 1)
             { MaxTextWidth = bounds.Width, LineHeight = 104 };
         drawing.DrawText(formatted, bounds.TopLeft);
     }
@@ -251,7 +260,7 @@ public sealed class ReplayThumbnailProvider : IInitializeWithFile, IInitializeWi
     {
         bitmap = 0; alphaType = WtsAlphaType.Argb;
         try { var replay = _bytes is not null ? ReplayApi.Read(_bytes) : _path is not null ? ReplayApi.ReadFile(_path) : null; bitmap = NativeBitmap.Create(ShellRenderer.Render(replay is null ? ShellMetadata.Empty : ShellMetadata.From(replay), checked((int)size), true)); return bitmap == 0 ? HResult.Fail : 0; }
-        catch { bitmap = NativeBitmap.Create(ShellRenderer.Render(ShellMetadata.Empty, checked((int)size), false)); return bitmap == 0 ? HResult.Fail : 0; }
+        catch { bitmap = NativeBitmap.Create(ShellRenderer.Render(ShellMetadata.Empty with { HasError = true }, checked((int)size), false)); return bitmap == 0 ? HResult.Fail : 0; }
     }
     private static byte[] ReadAll(IStream stream)
     {
